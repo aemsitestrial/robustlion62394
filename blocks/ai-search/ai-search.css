@@ -1,0 +1,146 @@
+.ai-search.block {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  /* Hero height matched to spec (~740px viewport banner) */
+  min-height: clamp(520px, 72vh, 800px);
+  padding: clamp(80px, 12vh, 160px) clamp(20px, 5vw, 64px);
+  background: radial-gradient(circle at 50% 35%, #10131f 0, #050608 42%, #000 100%);
+  color: #fff;
+  text-align: center;
+}
+
+.ai-search.block h2 {
+  margin: 0 0 clamp(36px, 6vh, 64px);
+  color: #f5f7ff;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.ai-search-form {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  min-height: clamp(60px, 8vh, 72px);
+  margin: 0 auto;
+  padding: 0 14px 0 22px;
+  border: 1px solid #3156a8;
+  border-radius: 58px;
+  background: linear-gradient(105deg, #070a12, #10162a 55%, #080b14);
+  box-shadow: 0 0 0 1px rgb(48 82 166 / 12%), 0 0 22px rgb(36 86 210 / 14%);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.ai-search-form:focus-within {
+  border-color: #5c8fff;
+  box-shadow: 0 0 0 3px rgb(53 106 255 / 16%), 0 0 28px rgb(53 106 255 / 30%);
+}
+
+/* Remove default focus ring and browser outline overlays */
+.ai-search-form input,
+.ai-search-form input:focus,
+.ai-search-form input:active {
+  min-width: 0;
+  flex: 1;
+  margin: 0 12px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  appearance: none;
+}
+
+/* Hide WebKit native search field inner decorations */
+.ai-search-form input::-webkit-search-decoration,
+.ai-search-form input::-webkit-search-cancel-button,
+.ai-search-form input::-webkit-search-results-button,
+.ai-search-form input::-webkit-search-results-decoration {
+  display: none;
+}
+
+.ai-search-form input::placeholder {
+  color: #d7dbe8;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  opacity: 0.9;
+}
+
+.ai-search-form button {
+  display: inline-grid;
+  flex: 0 0 42px;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #cbd6f5;
+  cursor: pointer;
+  outline: none !important;
+}
+
+.ai-search-form button:hover,
+.ai-search-form button:focus-visible {
+  background: rgb(77 122 255 / 18%);
+  color: #fff;
+  outline: none !important;
+}
+
+.ai-search-form svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.ai-search-form .ai-search-sparkle {
+  flex: 0 0 20px;
+  fill: none;
+  stroke: #75a1ff;
+}
+
+.ai-search-voice.is-listening {
+  background: rgb(88 136 255 / 28%);
+  color: #8cb0ff;
+}
+
+.ai-search-voice[hidden] {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .ai-search.block {
+    min-height: 420px;
+    padding: 60px 16px;
+  }
+
+  .ai-search.block h2 {
+    margin-bottom: 28px;
+  }
+
+  .ai-search-form {
+    min-height: 58px;
+    padding-right: 8px;
+    padding-left: 14px;
+  }
+
+  .ai-search-form button {
+    flex-basis: 38px;
+    width: 38px;
+    height: 39px;
+  }
+}

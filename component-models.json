@@ -172,6 +172,35 @@
     ]
   },
   {
+    "id": "ai-search",
+    "fields": [
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Title",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "placeholder",
+        "label": "Placeholder",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "searchEndpoint",
+        "label": "Search Endpoint",
+        "valueType": "string"
+      },
+      {
+        "component": "boolean",
+        "name": "voiceEnabled",
+        "label": "Enable Voice Search",
+        "value": true
+      }
+    ]
+  },
+  {
     "id": "article",
     "fields": [
       {
