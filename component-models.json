@@ -279,6 +279,20 @@
     "id": "carousel-item",
     "fields": [
       {
+        "component": "boolean",
+        "name": "autoplay",
+        "label": "Autoplay",
+        "value": false,
+        "valueType": "boolean"
+      },
+      {
+        "component": "number",
+        "name": "autoplayDelay",
+        "label": "Autoplay Delay (ms)",
+        "value": 5000,
+        "valueType": "number"
+      },
+      {
         "component": "reference",
         "valueType": "string",
         "name": "media_image",
