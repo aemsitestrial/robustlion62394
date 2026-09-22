@@ -64,7 +64,9 @@
         "text",
         "title",
 	"teaser",
-        "video"
+        "video",
+        "list",
+        "header"
       ]
     }
   ]
