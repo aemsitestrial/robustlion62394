@@ -257,6 +257,25 @@
     ]
   },
   {
+    "id": "carousel",
+    "fields": [
+      {
+        "component": "boolean",
+        "name": "autoplay",
+        "label": "Autoplay",
+        "value": false,
+        "valueType": "boolean"
+      },
+      {
+        "component": "number",
+        "name": "autoplayDelay",
+        "label": "Autoplay Delay (ms)",
+        "value": 5000,
+        "valueType": "number"
+      }
+    ]
+  },
+  {
     "id": "carousel-item",
     "fields": [
       {

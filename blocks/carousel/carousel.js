@@ -2,6 +2,19 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 import { fetchPlaceholders } from '../../scripts/placeholders.js';
 import showSlide from '../../scripts/carousel-support.js';
 
+function getFieldValue(block, name, fallback = '') {
+  const prop = block.querySelector(`[data-aue-prop="${name}"]`);
+  if (prop) return prop.textContent.trim();
+  if (block.dataset[name] !== undefined) return block.dataset[name];
+  const row = [...block.children].find((child) => child.dataset?.field === name);
+  return row?.textContent?.trim() || fallback;
+}
+
+function getBooleanValue(block, name, fallback = false) {
+  const value = String(getFieldValue(block, name, fallback)).toLowerCase();
+  return value === 'true' || value === 'yes' || value === '1';
+}
+
 function updateActiveSlide(slide) {
   const block = slide.closest('.carousel');
   const slideIndex = parseInt(slide.dataset.slideIndex, 10);
@@ -61,6 +74,28 @@ function bindEvents(block) {
   block.querySelectorAll('.carousel-slide').forEach((slide) => {
     slideObserver.observe(slide);
   });
+}
+
+function startAutoplay(block, delayMs) {
+  if (!Number.isFinite(delayMs) || delayMs <= 0) return;
+  if (block.carouselTimer) {
+    window.clearInterval(block.carouselTimer);
+  }
+
+  block.carouselTimer = window.setInterval(() => {
+    const currentIndex = Number.parseInt(block.dataset.activeSlide || '0', 10);
+    const slides = block.querySelectorAll('.carousel-slide');
+    if (!slides.length) return;
+    const nextIndex = currentIndex >= slides.length - 1 ? 0 : currentIndex + 1;
+    showSlide(block, nextIndex);
+  }, delayMs);
+}
+
+function stopAutoplay(block) {
+  if (block.carouselTimer) {
+    window.clearInterval(block.carouselTimer);
+    delete block.carouselTimer;
+  }
 }
 
 function createSlide(row, slideIndex, carouselId) {
@@ -148,5 +183,14 @@ export default async function decorate(block) {
 
   if (!isSingleSlide) {
     bindEvents(block);
+    const autoplayEnabled = getBooleanValue(block, 'autoplay', false);
+    const delayMs = Number.parseInt(getFieldValue(block, 'autoplayDelay', '5000'), 10);
+    if (autoplayEnabled) {
+      startAutoplay(block, delayMs);
+      block.addEventListener('mouseenter', () => stopAutoplay(block), true);
+      block.addEventListener('mouseleave', () => startAutoplay(block, delayMs), true);
+      block.addEventListener('focusin', () => stopAutoplay(block), true);
+      block.addEventListener('focusout', () => startAutoplay(block, delayMs), true);
+    }
   }
 }
