@@ -125,6 +125,13 @@ export default async function decorate(block) {
   block.setAttribute('id', `carousel-${carouselId}`);
   const rows = block.querySelectorAll(':scope > div');
   const isSingleSlide = rows.length < 2;
+  const autoplayEnabled = getBooleanValue(block, 'autoplay', false);
+  const delayMs = Number.parseInt(getFieldValue(block, 'autoplayDelay', '5000'), 10);
+  const isSliderMode = autoplayEnabled && !isSingleSlide;
+
+  block.classList.toggle('is-slider', isSliderMode);
+  block.dataset.autoplay = String(autoplayEnabled);
+  block.dataset.autoplayDelay = String(delayMs);
 
   const placeholders = await fetchPlaceholders();
 
@@ -142,7 +149,7 @@ export default async function decorate(block) {
   block.prepend(slidesWrapper);
 
   let slideIndicators;
-  if (!isSingleSlide) {
+  if (isSliderMode) {
     const slideIndicatorsNav = document.createElement('nav');
     slideIndicatorsNav.setAttribute(
       'aria-label',
@@ -168,7 +175,7 @@ export default async function decorate(block) {
     moveInstrumentation(row, slide);
     slidesWrapper.append(slide);
 
-    if (slideIndicators) {
+    if (isSliderMode && slideIndicators) {
       const indicator = document.createElement('li');
       indicator.classList.add('carousel-slide-indicator');
       indicator.dataset.targetSlide = idx;
@@ -181,16 +188,12 @@ export default async function decorate(block) {
   container.append(slidesWrapper);
   block.prepend(container);
 
-  if (!isSingleSlide) {
+  if (isSliderMode) {
     bindEvents(block);
-    const autoplayEnabled = getBooleanValue(block, 'autoplay', false);
-    const delayMs = Number.parseInt(getFieldValue(block, 'autoplayDelay', '5000'), 10);
-    if (autoplayEnabled) {
-      startAutoplay(block, delayMs);
-      block.addEventListener('mouseenter', () => stopAutoplay(block), true);
-      block.addEventListener('mouseleave', () => startAutoplay(block, delayMs), true);
-      block.addEventListener('focusin', () => stopAutoplay(block), true);
-      block.addEventListener('focusout', () => startAutoplay(block, delayMs), true);
-    }
+    startAutoplay(block, delayMs);
+    block.addEventListener('mouseenter', () => stopAutoplay(block), true);
+    block.addEventListener('mouseleave', () => startAutoplay(block, delayMs), true);
+    block.addEventListener('focusin', () => stopAutoplay(block), true);
+    block.addEventListener('focusout', () => startAutoplay(block, delayMs), true);
   }
 }

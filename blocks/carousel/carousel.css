@@ -10,6 +10,11 @@
 }
 
 .carousel .carousel-slides {
+  display: block;
+  overflow: visible;
+}
+
+.carousel.is-slider .carousel-slides {
   display: flex;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
@@ -21,8 +26,6 @@
 }
 
 .carousel .carousel-slide {
-  flex: 0 0 100%;
-  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -30,6 +33,11 @@
   position: relative;
   width: 100%;
   min-height: min(50vw, calc(100dvh - var(--header-height)));
+}
+
+.carousel.is-slider .carousel-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
 }
 
 .carousel .carousel-slide:has(.carousel-slide-content[data-align='center']) {
@@ -62,6 +70,10 @@
 }
 
 .carousel .carousel-slide-indicators {
+  display: none;
+}
+
+.carousel.is-slider .carousel-slide-indicators {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -88,6 +100,10 @@
 }
 
 .carousel .carousel-navigation-buttons {
+  display: none;
+}
+
+.carousel.is-slider .carousel-navigation-buttons {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -100,7 +116,7 @@
 }
 
 /* stylelint-disable-next-line no-descending-specificity */
-.carousel .carousel-navigation-buttons button {
+.carousel.is-slider .carousel-navigation-buttons button {
   position: relative;
   width: 44px;
   height: 44px;
@@ -111,12 +127,12 @@
   transition: background-color 0.2s;
 }
 
-.carousel .carousel-navigation-buttons button:hover,
-.carousel .carousel-navigation-buttons button:focus-visible {
+.carousel.is-slider .carousel-navigation-buttons button:hover,
+.carousel.is-slider .carousel-navigation-buttons button:focus-visible {
   background-color: rgb(19 19 19 / 75%);
 }
 
-.carousel .carousel-navigation-buttons button::after {
+.carousel.is-slider .carousel-navigation-buttons button::after {
   display: block;
   content: '';
   border: 2px solid;
@@ -130,13 +146,13 @@
   transform: translate(-50%, -50%) rotate(-135deg);
 }
 
-.carousel .carousel-navigation-buttons button.slide-next::after {
+.carousel.is-slider .carousel-navigation-buttons button.slide-next::after {
   transform: translate(-50%, -50%) rotate(45deg);
   left: calc(50% - 2px);
 }
 
 @media (width >= 600px) {
-  .carousel .carousel-navigation-buttons {
+  .carousel.is-slider .carousel-navigation-buttons {
     left: 24px;
     right: 24px;
   }
