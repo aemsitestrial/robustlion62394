@@ -9,24 +9,19 @@ function getBoolean(block, name, fallback = false) {
   return value === 'true' || value === 'yes' || value === '1';
 }
 
-function getRichTextLinks(block) {
-  const field = block.querySelector('[data-aue-prop="navigationLinks"]');
-  if (!field) return [];
+function getFieldValues(block, name) {
+  return [...block.querySelectorAll(`[data-aue-prop="${name}"]`)]
+    .map((field) => field.textContent.trim() || field.dataset.value || '')
+    .filter(Boolean);
+}
 
-  const links = [...field.querySelectorAll('a[href]')].map((link) => ({
-    href: link.href,
-    text: link.textContent.trim(),
+function getNavigationLinks(block) {
+  const links = getFieldValues(block, 'navigationLink');
+  const texts = getFieldValues(block, 'navigationText');
+  return links.map((href, index) => ({
+    href,
+    text: texts[index] || href,
   }));
-  if (links.length) return links;
-
-  return field.textContent
-    .split(/\r?\n|,|;/)
-    .map((text) => text.trim())
-    .filter(Boolean)
-    .map((text) => ({
-      href: `/${text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
-      text,
-    }));
 }
 
 function createLink(href, text, className = '') {
@@ -44,7 +39,7 @@ export default function decorate(block) {
   const ctaText = getField(block, 'ctaText');
   const ctaLink = getField(block, 'ctaLink');
   const showSearch = getBoolean(block, 'showSearch', true);
-  const navigationLinks = getRichTextLinks(block);
+  const navigationLinks = getNavigationLinks(block);
 
   block.classList.add(`dummy-header-${variant}`);
 
@@ -54,11 +49,28 @@ export default function decorate(block) {
   const brand = createLink(brandLink, brandName, 'dummy-header-brand');
   header.append(brand);
 
+  const menuButton = document.createElement('button');
+  menuButton.type = 'button';
+  menuButton.className = 'dummy-header-menu-button';
+  menuButton.setAttribute('aria-controls', 'dummy-header-navigation');
+  menuButton.setAttribute('aria-expanded', 'false');
+  menuButton.setAttribute('aria-label', 'Open navigation');
+  menuButton.innerHTML = '<span></span><span></span><span></span>';
+  header.append(menuButton);
+
   const nav = document.createElement('nav');
   nav.className = 'dummy-header-nav';
+  nav.id = 'dummy-header-navigation';
   nav.setAttribute('aria-label', 'Primary navigation');
   navigationLinks.forEach(({ href, text }) => nav.append(createLink(href, text)));
   header.append(nav);
+
+  menuButton.addEventListener('click', () => {
+    const expanded = menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.setAttribute('aria-expanded', String(!expanded));
+    menuButton.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
+    header.classList.toggle('dummy-header-menu-open', !expanded);
+  });
 
   const actions = document.createElement('div');
   actions.className = 'dummy-header-actions';

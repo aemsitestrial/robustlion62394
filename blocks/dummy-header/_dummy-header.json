@@ -51,11 +51,20 @@
           "valueType": "string"
         },
         {
-          "component": "richtext",
-          "name": "navigationLinks",
-          "label": "Navigation Links",
+          "component": "text",
+          "name": "navigationLink",
+          "label": "Navigation Link",
           "value": "",
-          "valueType": "string"
+          "valueType": "string",
+          "multi": true
+        },
+        {
+          "component": "text",
+          "name": "navigationText",
+          "label": "Navigation Text",
+          "value": "",
+          "valueType": "string",
+          "multi": true
         },
         {
           "component": "text",
