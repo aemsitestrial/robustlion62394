@@ -8,23 +8,42 @@ import {
 
 const INDEX_SOURCES = ['/query-index.json', '/sitemap.json'];
 
+function getElementValue(element) {
+  return (
+    element.dataset.value
+    || element.getAttribute('value')
+    || element.textContent.trim()
+  );
+}
+
 function getField(block, name, fallback = '') {
   const prop = block.querySelector(`[data-aue-prop="${name}"]`);
-  if (prop) return prop.textContent.trim();
+  if (prop) return getElementValue(prop);
   if (block.dataset[name] !== undefined) return block.dataset[name];
   const row = [...block.children].find(
     (child) => child.dataset?.field === name,
   );
-  return row?.textContent?.trim() || fallback;
+  return row ? getElementValue(row) : fallback;
 }
 
 function getFieldValues(block, name) {
   const values = [...block.querySelectorAll(`[data-aue-prop="${name}"]`)]
-    .map((element) => element.textContent.trim())
+    .map(getElementValue)
     .filter(Boolean);
   if (values.length) return values;
   const value = getField(block, name);
   return value ? [value] : [];
+}
+
+function normalizeListType(value) {
+  const normalized = value.toLowerCase().trim();
+  const labels = {
+    'child pages': 'children',
+    'fixed list': 'fixed',
+    search: 'search',
+    tags: 'tags',
+  };
+  return labels[normalized] || normalized;
 }
 
 function getBoolean(block, name, fallback = false) {
@@ -309,7 +328,7 @@ async function buildDefaultList(block, config) {
 
 export default async function decorate(block) {
   const config = {
-    listType: getField(block, 'listType', 'children').toLowerCase(),
+    listType: normalizeListType(getField(block, 'listType', 'children')),
     parentPage: getField(block, 'parentPage'),
     searchIn: getField(block, 'searchIn'),
     tagsParentPage: getField(block, 'tagsParentPage'),
