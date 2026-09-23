@@ -20,12 +20,38 @@
   padding: 0 24px;
 }
 
+.dummy-header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 72px;
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
 .dummy-header-brand {
   flex: 0 0 auto;
   color: inherit;
   font-size: 22px;
   font-weight: 700;
   text-decoration: none;
+}
+
+.dummy-header-brand-link {
+  color: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dummy-header-brand-link img {
+  width: auto;
+  max-width: 140px;
+  max-height: 40px;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 .dummy-header-menu-button {
@@ -46,14 +72,22 @@
   background: currentcolor;
 }
 
-.dummy-header-nav {
+.dummy-header-sections {
   display: flex;
   flex: 1 1 auto;
   justify-content: center;
   gap: 20px;
 }
 
-.dummy-header-nav a {
+.dummy-header-sections ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dummy-header-sections a {
   color: inherit;
   text-decoration: none;
 }
@@ -92,8 +126,8 @@
   transform-origin: left center;
 }
 
-.dummy-header-nav a:hover,
-.dummy-header-nav a:focus-visible {
+.dummy-header-sections a:hover,
+.dummy-header-sections a:focus-visible {
   color: var(--dummy-header-accent);
   text-decoration: underline;
 }
@@ -104,7 +138,7 @@
   text-decoration: underline;
 }
 
-.dummy-header-actions {
+.dummy-header-tools {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -119,69 +153,96 @@
   text-decoration: none;
 }
 
-.dummy-header-compact {
-  --dummy-header-height: 48px;
+.dummy-header.sticky .dummy-header-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--dummy-header-bg);
 }
 
-.dummy-header-compact .dummy-header-nav {
-  justify-content: flex-end;
-  gap: 14px;
-  font-size: 14px;
+.dummy-header.centered .dummy-header-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.dummy-header-compact .dummy-header-brand {
-  font-size: 18px;
-}
-
-.dummy-header-campaign {
+.dummy-header.dark {
   --dummy-header-bg: #172554;
   --dummy-header-border: #172554;
   --dummy-header-text: #fff;
   --dummy-header-accent: #fbbf24;
 }
 
-.dummy-header-campaign .dummy-header-inner {
-  min-height: 84px;
-}
-
-.dummy-header-campaign .dummy-header-cta {
+.dummy-header.dark .dummy-header-cta {
   color: #172554;
   background: var(--dummy-header-accent);
 }
 
-@media (width < 700px) {
-  .dummy-header-inner {
-    flex-wrap: wrap;
-    gap: 12px 16px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-  }
-
+@media (width < 900px) {
   .dummy-header-menu-button {
     display: block;
   }
 
   .dummy-header-nav {
-    order: 3;
-    flex-basis: 100%;
-    display: none;
-    justify-content: flex-start;
-    flex-direction: column;
-    gap: 0;
-    overflow-x: visible;
-    border-top: 1px solid var(--dummy-header-border);
+    position: relative;
+    flex-wrap: wrap;
+    min-height: 64px;
   }
 
-  .dummy-header-menu-open .dummy-header-nav {
+  .dummy-header-sections {
+    display: none;
+    flex-basis: 100%;
+    order: 4;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    min-height: calc(100dvh - 64px);
+    padding: 16px 0;
+    background: var(--dummy-header-bg);
+  }
+
+  .dummy-header-nav[aria-expanded='true'] .dummy-header-sections {
     display: flex;
   }
 
-  .dummy-header-nav a {
+  .dummy-header-sections ul {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .dummy-header-sections a {
+    display: block;
     padding: 12px 0;
     border-bottom: 1px solid var(--dummy-header-border);
   }
 
-  .dummy-header-actions {
+  .dummy-header-tools {
     margin-left: auto;
+  }
+
+  .dummy-header.centered .dummy-header-brand {
+    position: static;
+    transform: none;
+  }
+
+  .dummy-header-nav[aria-expanded='true'] {
+    align-items: flex-start;
+  }
+
+  .dummy-header-nav[aria-expanded='true'] .dummy-header-tools {
+    margin-left: auto;
+  }
+
+  .dummy-header-menu-button:focus-visible,
+  .dummy-header-search:focus-visible,
+  .dummy-header-cta:focus-visible {
+    outline: 3px solid var(--dummy-header-accent);
+    outline-offset: 3px;
+  }
+}
+
+@media (width >= 900px) {
+  .dummy-header-menu-button {
+    display: none;
   }
 }

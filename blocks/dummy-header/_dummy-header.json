@@ -26,14 +26,15 @@
       "fields": [
         {
           "component": "select",
-          "name": "variant",
+          "name": "headerVariant",
           "label": "Header Variant",
           "value": "standard",
           "valueType": "string",
           "options": [
             { "name": "Standard", "value": "standard" },
-            { "name": "Compact", "value": "compact" },
-            { "name": "Campaign", "value": "campaign" }
+            { "name": "Sticky", "value": "sticky" },
+            { "name": "Centered", "value": "centered" },
+            { "name": "Dark", "value": "dark" }
           ]
         },
         {
@@ -51,20 +52,35 @@
           "valueType": "string"
         },
         {
-          "component": "text",
-          "name": "navigationLink",
-          "label": "Navigation Link",
+          "component": "reference",
+          "name": "brandLogo",
+          "label": "Brand Logo",
           "value": "",
-          "valueType": "string",
-          "multi": true
+          "valueType": "string"
         },
         {
-          "component": "text",
-          "name": "navigationText",
-          "label": "Navigation Text",
-          "value": "",
-          "valueType": "string",
-          "multi": true
+          "component": "container",
+          "name": "navigationItems",
+          "label": "Navigation Items",
+          "collapsible": false,
+          "fields": [
+            {
+              "component": "text",
+              "name": "label",
+              "label": "Label",
+              "value": "",
+              "valueType": "string",
+              "multi": true
+            },
+            {
+              "component": "text",
+              "name": "link",
+              "label": "Link",
+              "value": "",
+              "valueType": "string",
+              "multi": true
+            }
+          ]
         },
         {
           "component": "text",

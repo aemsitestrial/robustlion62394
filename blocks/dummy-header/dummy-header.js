@@ -16,11 +16,28 @@ function getFieldValues(block, name) {
 }
 
 function getNavigationLinks(block) {
-  const links = getFieldValues(block, 'navigationLink');
-  const texts = getFieldValues(block, 'navigationText');
-  return links.map((href, index) => ({
-    href,
-    text: texts[index] || href,
+  const container = block.querySelector('[data-aue-prop="navigationItems"]');
+  const labels = container
+    ? [...container.querySelectorAll('[data-aue-prop="label"]')]
+      .map((field) => field.textContent.trim() || field.dataset.value || '')
+      .filter(Boolean)
+    : getFieldValues(block, 'navigationText');
+  const links = container
+    ? [...container.querySelectorAll('[data-aue-prop="link"]')]
+      .map((field) => field.textContent.trim() || field.dataset.value || '')
+      .filter(Boolean)
+    : getFieldValues(block, 'navigationLink');
+  if (links.length || labels.length) {
+    return (links.length ? links : labels).map((href, index) => ({
+      href: links[index] || `/${href.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+      text: labels[index] || href,
+    }));
+  }
+
+  const plainText = block.querySelector('[data-aue-prop="navigationItems"]')?.textContent || '';
+  return plainText.split(/\r?\n|,|;/).map((item) => item.trim()).filter(Boolean).map((text) => ({
+    href: `/${text.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    text,
   }));
 }
 
@@ -33,54 +50,76 @@ function createLink(href, text, className = '') {
 }
 
 export default function decorate(block) {
-  const variant = getField(block, 'variant', 'standard').toLowerCase();
+  const variant = getField(block, 'headerVariant', 'standard').toLowerCase();
   const brandName = getField(block, 'brandName', 'Brand');
   const brandLink = getField(block, 'brandLink', '/');
+  const brandLogo = getField(block, 'brandLogo');
   const ctaText = getField(block, 'ctaText');
   const ctaLink = getField(block, 'ctaLink');
   const showSearch = getBoolean(block, 'showSearch', true);
   const navigationLinks = getNavigationLinks(block);
 
-  block.classList.add(`dummy-header-${variant}`);
+  if (variant !== 'standard') block.classList.add(variant);
 
-  const header = document.createElement('header');
-  header.className = 'dummy-header-inner';
+  block.textContent = '';
+  const nav = document.createElement('nav');
+  nav.className = 'dummy-header-nav';
+  nav.setAttribute('aria-label', 'Primary navigation');
+  nav.setAttribute('aria-expanded', 'false');
 
-  const brand = createLink(brandLink, brandName, 'dummy-header-brand');
-  header.append(brand);
+  const brandSection = document.createElement('div');
+  brandSection.className = 'dummy-header-brand';
+  const brand = createLink(brandLink, brandName, 'dummy-header-brand-link');
+  if (brandLogo) {
+    const logo = document.createElement('img');
+    logo.src = brandLogo;
+    logo.alt = brandName;
+    brand.replaceChildren(logo, document.createTextNode(brandName));
+  }
+  brandSection.append(brand);
 
+  const sections = document.createElement('div');
+  sections.className = 'dummy-header-sections';
+  sections.id = 'dummy-header-sections';
+  const navigation = document.createElement('ul');
+  navigationLinks.forEach(({ href, text }) => {
+    const item = document.createElement('li');
+    item.append(createLink(href, text));
+    navigation.append(item);
+  });
+  sections.append(navigation);
+
+  const tools = document.createElement('div');
+  tools.className = 'dummy-header-tools';
   const menuButton = document.createElement('button');
   menuButton.type = 'button';
   menuButton.className = 'dummy-header-menu-button';
-  menuButton.setAttribute('aria-controls', 'dummy-header-navigation');
+  menuButton.setAttribute('aria-controls', 'dummy-header-sections');
   menuButton.setAttribute('aria-expanded', 'false');
   menuButton.setAttribute('aria-label', 'Open navigation');
   menuButton.innerHTML = '<span></span><span></span><span></span>';
-  header.append(menuButton);
-
-  const nav = document.createElement('nav');
-  nav.className = 'dummy-header-nav';
-  nav.id = 'dummy-header-navigation';
-  nav.setAttribute('aria-label', 'Primary navigation');
-  navigationLinks.forEach(({ href, text }) => nav.append(createLink(href, text)));
-  header.append(nav);
-
-  menuButton.addEventListener('click', () => {
-    const expanded = menuButton.getAttribute('aria-expanded') === 'true';
-    menuButton.setAttribute('aria-expanded', String(!expanded));
-    menuButton.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
-    header.classList.toggle('dummy-header-menu-open', !expanded);
-  });
-
-  const actions = document.createElement('div');
-  actions.className = 'dummy-header-actions';
+  tools.append(menuButton);
   if (showSearch) {
     const search = createLink('/search', 'Search', 'dummy-header-search');
     search.setAttribute('aria-label', 'Search');
-    actions.append(search);
+    tools.append(search);
   }
-  if (ctaText && ctaLink) actions.append(createLink(ctaLink, ctaText, 'dummy-header-cta'));
-  header.append(actions);
+  if (ctaText && ctaLink) tools.append(createLink(ctaLink, ctaText, 'dummy-header-cta'));
+  nav.append(brandSection, sections, tools);
 
-  block.replaceChildren(header);
+  const setMenuState = (expanded) => {
+    nav.setAttribute('aria-expanded', String(expanded));
+    menuButton.setAttribute('aria-expanded', String(expanded));
+    menuButton.setAttribute('aria-label', expanded ? 'Close navigation' : 'Open navigation');
+    document.body.style.overflow = expanded ? 'hidden' : '';
+  };
+  menuButton.addEventListener('click', () => setMenuState(nav.getAttribute('aria-expanded') !== 'true'));
+  nav.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setMenuState(false);
+      menuButton.focus();
+    }
+  });
+
+  block.append(nav);
 }
