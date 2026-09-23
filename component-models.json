@@ -451,6 +451,22 @@
       },
       {
         "component": "text",
+        "name": "navigationLabel",
+        "label": "Navigation Label",
+        "value": "",
+        "valueType": "string",
+        "multi": true
+      },
+      {
+        "component": "text",
+        "name": "navigationLink",
+        "label": "Navigation Link",
+        "value": "",
+        "valueType": "string",
+        "multi": true
+      },
+      {
+        "component": "text",
         "name": "ctaText",
         "label": "CTA Text",
         "value": "",

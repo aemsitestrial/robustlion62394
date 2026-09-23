@@ -31,6 +31,9 @@ function getNavigationLinks(block) {
   let labels = getFieldValues(block, 'label');
   let links = getFieldValues(block, 'link');
 
+  if (!labels.length) labels = getFieldValues(block, 'navigationLabel');
+  if (!links.length) links = getFieldValues(block, 'navigationLink');
+
   if (!labels.length) labels = getKeyValueRows(block, 'label');
   if (!links.length) links = getKeyValueRows(block, 'link');
 
