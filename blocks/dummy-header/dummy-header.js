@@ -15,30 +15,38 @@ function getFieldValues(block, name) {
     .filter(Boolean);
 }
 
+function slugify(value) {
+  return `/${value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+}
+
+function getKeyValueRows(block, key) {
+  return [...block.querySelectorAll('div')]
+    .filter((row) => row.children.length >= 2)
+    .filter((row) => row.children[0].textContent.trim().toLowerCase() === key)
+    .map((row) => row.children[1].textContent.trim())
+    .filter(Boolean);
+}
+
 function getNavigationLinks(block) {
-  const container = block.querySelector('[data-aue-prop="navigationItems"]');
-  const labels = container
-    ? [...container.querySelectorAll('[data-aue-prop="label"]')]
-      .map((field) => field.textContent.trim() || field.dataset.value || '')
-      .filter(Boolean)
-    : getFieldValues(block, 'navigationText');
-  const links = container
-    ? [...container.querySelectorAll('[data-aue-prop="link"]')]
-      .map((field) => field.textContent.trim() || field.dataset.value || '')
-      .filter(Boolean)
-    : getFieldValues(block, 'navigationLink');
-  if (links.length || labels.length) {
-    return (links.length ? links : labels).map((href, index) => ({
-      href: links[index] || `/${href.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-      text: labels[index] || href,
+  let labels = getFieldValues(block, 'label');
+  let links = getFieldValues(block, 'link');
+
+  if (!labels.length) labels = getKeyValueRows(block, 'label');
+  if (!links.length) links = getKeyValueRows(block, 'link');
+
+  if (labels.length || links.length) {
+    return (labels.length > links.length ? labels : links).map((value, index) => ({
+      href: links[index] || slugify(labels[index] || value),
+      text: labels[index] || value,
     }));
   }
 
   const plainText = block.querySelector('[data-aue-prop="navigationItems"]')?.textContent || '';
-  return plainText.split(/\r?\n|,|;/).map((item) => item.trim()).filter(Boolean).map((text) => ({
-    href: `/${text.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-    text,
-  }));
+  return plainText
+    .split(/\r?\n|,|;/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((text) => ({ href: slugify(text), text }));
 }
 
 function createLink(href, text, className = '') {
