@@ -63,29 +63,27 @@
           "name": "navigationItems",
           "label": "Navigation Items",
           "valueType": "array",
-          "fields": [
-            {
-              "component": "container",
-              "name": "item",
-              "label": "Navigation Item",
-              "fields": [
-                {
-                  "component": "text",
-                  "name": "label",
-                  "label": "Label",
-                  "value": "",
-                  "valueType": "string"
-                },
-                {
-                  "component": "text",
-                  "name": "link",
-                  "label": "Link",
-                  "value": "",
-                  "valueType": "string"
-                }
-              ]
-            }
-          ]
+          "field": {
+            "component": "container",
+            "name": "item",
+            "label": "Navigation Item",
+            "fields": [
+              {
+                "component": "text",
+                "name": "label",
+                "label": "Label",
+                "value": "",
+                "valueType": "string"
+              },
+              {
+                "component": "text",
+                "name": "link",
+                "label": "Link",
+                "value": "",
+                "valueType": "string"
+              }
+            ]
+          }
         },
         {
           "component": "text",
