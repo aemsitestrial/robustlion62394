@@ -12,10 +12,21 @@ function getBoolean(block, name, fallback = false) {
 function getRichTextLinks(block) {
   const field = block.querySelector('[data-aue-prop="navigationLinks"]');
   if (!field) return [];
-  return [...field.querySelectorAll('a[href]')].map((link) => ({
+
+  const links = [...field.querySelectorAll('a[href]')].map((link) => ({
     href: link.href,
     text: link.textContent.trim(),
   }));
+  if (links.length) return links;
+
+  return field.textContent
+    .split(/\r?\n|,|;/)
+    .map((text) => text.trim())
+    .filter(Boolean)
+    .map((text) => ({
+      href: `/${text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`,
+      text,
+    }));
 }
 
 function createLink(href, text, className = '') {
@@ -51,7 +62,11 @@ export default function decorate(block) {
 
   const actions = document.createElement('div');
   actions.className = 'dummy-header-actions';
-  if (showSearch) actions.append(createLink('/search', 'Search', 'dummy-header-search'));
+  if (showSearch) {
+    const search = createLink('/search', 'Search', 'dummy-header-search');
+    search.setAttribute('aria-label', 'Search');
+    actions.append(search);
+  }
   if (ctaText && ctaLink) actions.append(createLink(ctaLink, ctaText, 'dummy-header-cta'));
   header.append(actions);
 

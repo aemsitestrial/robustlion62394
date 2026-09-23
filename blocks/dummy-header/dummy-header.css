@@ -37,6 +37,38 @@
 
 .dummy-header-nav a,
 .dummy-header-search {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  overflow: hidden;
+  text-indent: -9999px;
+}
+
+.dummy-header-search::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentcolor;
+  border-radius: 50%;
+}
+
+.dummy-header-search::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 8px;
+  height: 2px;
+  background: currentcolor;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.dummy-header-search {
   color: inherit;
   text-decoration: none;
 }
