@@ -16,18 +16,25 @@ function getElementValue(element) {
   );
 }
 
+function getFieldElements(block, name) {
+  const elements = [...block.querySelectorAll(`[data-aue-prop="${name}"]`)]
+    .filter((element) => element !== block);
+  if (block.getAttribute('data-aue-prop') === name) elements.unshift(block);
+  [...block.children]
+    .filter((child) => child.dataset?.field === name && !elements.includes(child))
+    .forEach((child) => elements.push(child));
+  return elements;
+}
+
 function getField(block, name, fallback = '') {
-  const prop = block.querySelector(`[data-aue-prop="${name}"]`);
+  const [prop] = getFieldElements(block, name);
   if (prop) return getElementValue(prop);
   if (block.dataset[name] !== undefined) return block.dataset[name];
-  const row = [...block.children].find(
-    (child) => child.dataset?.field === name,
-  );
-  return row ? getElementValue(row) : fallback;
+  return fallback;
 }
 
 function getFieldValues(block, name) {
-  const values = [...block.querySelectorAll(`[data-aue-prop="${name}"]`)]
+  const values = getFieldElements(block, name)
     .map(getElementValue)
     .filter(Boolean);
   if (values.length) return values;
@@ -250,6 +257,10 @@ function getFixedItems(block) {
   const links = getFieldValues(block, 'fixedLink');
   const texts = getFieldValues(block, 'fixedText');
   const targets = getFieldValues(block, 'fixedTarget');
+  if (!links.length) {
+    // eslint-disable-next-line no-console
+    console.warn('List Fixed List has no authored links.', block);
+  }
   return links.map((path, index) => ({
     path,
     title: texts[index] || path,
