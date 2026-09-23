@@ -374,6 +374,74 @@
     ]
   },
   {
+    "id": "dummy-header",
+    "fields": [
+      {
+        "component": "select",
+        "name": "variant",
+        "label": "Header Variant",
+        "value": "standard",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Standard",
+            "value": "standard"
+          },
+          {
+            "name": "Compact",
+            "value": "compact"
+          },
+          {
+            "name": "Campaign",
+            "value": "campaign"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "brandName",
+        "label": "Brand Name",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "brandLink",
+        "label": "Brand Link",
+        "value": "/",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "navigationLinks",
+        "label": "Navigation Links",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "ctaText",
+        "label": "CTA Text",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "ctaLink",
+        "label": "CTA Link",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "boolean",
+        "name": "showSearch",
+        "label": "Show Search",
+        "value": true,
+        "valueType": "boolean"
+      }
+    ]
+  },
+  {
     "id": "embed-adaptive-form",
     "fields": [
       {

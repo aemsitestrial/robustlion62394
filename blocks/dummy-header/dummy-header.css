@@ -1,0 +1,115 @@
+.dummy-header {
+  --dummy-header-bg: #fff;
+  --dummy-header-border: #e6e6e6;
+  --dummy-header-text: #202124;
+  --dummy-header-accent: #464feb;
+  --dummy-header-height: 72px;
+
+  border-bottom: 1px solid var(--dummy-header-border);
+  color: var(--dummy-header-text);
+  background: var(--dummy-header-bg);
+}
+
+.dummy-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: var(--dummy-header-height);
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.dummy-header-brand {
+  flex: 0 0 auto;
+  color: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dummy-header-nav {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 20px;
+}
+
+.dummy-header-nav a,
+.dummy-header-search {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dummy-header-nav a:hover,
+.dummy-header-nav a:focus-visible,
+.dummy-header-search:hover,
+.dummy-header-search:focus-visible {
+  color: var(--dummy-header-accent);
+  text-decoration: underline;
+}
+
+.dummy-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.dummy-header-cta {
+  padding: 9px 14px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--dummy-header-accent);
+  text-decoration: none;
+}
+
+.dummy-header-compact {
+  --dummy-header-height: 48px;
+}
+
+.dummy-header-compact .dummy-header-nav {
+  justify-content: flex-end;
+  gap: 14px;
+  font-size: 14px;
+}
+
+.dummy-header-compact .dummy-header-brand {
+  font-size: 18px;
+}
+
+.dummy-header-campaign {
+  --dummy-header-bg: #172554;
+  --dummy-header-border: #172554;
+  --dummy-header-text: #fff;
+  --dummy-header-accent: #fbbf24;
+}
+
+.dummy-header-campaign .dummy-header-inner {
+  min-height: 84px;
+}
+
+.dummy-header-campaign .dummy-header-cta {
+  color: #172554;
+  background: var(--dummy-header-accent);
+}
+
+@media (width < 700px) {
+  .dummy-header-inner {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .dummy-header-nav {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .dummy-header-actions {
+    margin-left: auto;
+  }
+}
