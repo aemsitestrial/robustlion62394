@@ -30,6 +30,13 @@ function getField(block, name, fallback = '') {
   const [prop] = getFieldElements(block, name);
   if (prop) return getElementValue(prop);
   if (block.dataset[name] !== undefined) return block.dataset[name];
+
+  if (name === 'listType') {
+    const serialized = block.textContent.trim().toLowerCase();
+    const match = serialized.match(/^(child pages|children|fixed list|fixed|search|tags)\b/);
+    if (match) return match[1];
+  }
+
   return fallback;
 }
 
