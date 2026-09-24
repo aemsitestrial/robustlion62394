@@ -249,8 +249,10 @@ function filterPersonalizedItems(items, proposition) {
 }
 
 function getFixedItems(block) {
-  const source = block.querySelector('[data-aue-prop="fixedItems"]') || block;
-  const authoredLinks = [...source.querySelectorAll('a[href]')];
+  const richTextSource = block.querySelector('[data-aue-prop="fixedItems"]');
+  const authoredLinks = richTextSource
+    ? [...richTextSource.querySelectorAll('a[href]')]
+    : [];
   if (authoredLinks.length) {
     return authoredLinks.map((link) => ({
       path: link.href,
@@ -262,13 +264,29 @@ function getFixedItems(block) {
   }
 
   const links = getFieldValues(block, 'fixedLink');
-  const texts = getFieldValues(block, 'fixedText');
+  let texts = getFieldValues(block, 'fixedText');
   const targets = getFieldValues(block, 'fixedTarget');
-  if (!links.length) {
+  const serializedLinks = [...block.querySelectorAll('a[href]')];
+  const linkValues = links.length
+    ? links
+    : serializedLinks.map((link) => link.href);
+
+  if (!texts.length && serializedLinks.length) {
+    const linkRow = [...block.children].find((row) => row.contains(serializedLinks[0]));
+    const textRow = linkRow?.nextElementSibling;
+    if (textRow) {
+      texts = textRow.textContent
+        .split(',')
+        .map((text) => text.trim())
+        .filter(Boolean);
+    }
+  }
+
+  if (!linkValues.length) {
     // eslint-disable-next-line no-console
     console.warn('List Fixed List has no authored links.', block);
   }
-  return links.map((path, index) => ({
+  return linkValues.map((path, index) => ({
     path,
     title: texts[index] || path,
     target: targets[index] || '',
