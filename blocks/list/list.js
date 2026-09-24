@@ -60,6 +60,10 @@ function normalizeListType(value) {
   return labels[normalized] || normalized;
 }
 
+function slugify(value) {
+  return `/${value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+}
+
 function getBoolean(block, name, fallback = false) {
   const value = getField(block, name, String(fallback)).toLowerCase();
   return value === 'true' || value === 'yes' || value === '1';
@@ -286,9 +290,10 @@ function getFixedItems(block) {
     // eslint-disable-next-line no-console
     console.warn('List Fixed List has no authored links.', block);
   }
-  return linkValues.map((path, index) => ({
-    path,
-    title: texts[index] || path,
+  const itemCount = Math.max(linkValues.length, texts.length);
+  return Array.from({ length: itemCount }, (_, index) => ({
+    path: linkValues[index] || slugify(texts[index]),
+    title: texts[index] || linkValues[index] || '',
     target: targets[index] || '',
   }));
 }
