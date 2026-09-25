@@ -89,7 +89,11 @@ function getItems(data) {
 }
 
 async function loadIndex() {
-  const publishOrigin = getAEMPublish();
+  const configuredOrigin = getAEMPublish();
+  const codeOrigin = new URL(import.meta.url).origin;
+  const publishOrigin = configuredOrigin.includes('.adobeaemcloud.com')
+    ? codeOrigin
+    : configuredOrigin;
   const responses = await Promise.all(
     INDEX_SOURCES.map(async (source) => {
       try {
