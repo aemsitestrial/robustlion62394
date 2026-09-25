@@ -6,8 +6,6 @@ import {
   setPersonalizationAttributes,
 } from '../../scripts/target-personalization.js';
 
-const INDEX_SOURCES = ['/query-index.json', '/sitemap.json'];
-
 function getElementValue(element) {
   return (
     element.dataset.value
@@ -88,20 +86,19 @@ function getItems(data) {
 }
 
 async function loadIndex() {
-  const responses = await Promise.all(
-    INDEX_SOURCES.map(async (source) => {
-      try {
-        const response = await fetch(source);
-        if (!response.ok) return null;
-        return await response.json();
-      } catch (error) {
-        return null;
-      }
-    }),
-  );
-  const data = responses.find((response) => response);
-  if (data) return getItems(data);
-  return [];
+  const isAuthor = window.location.hostname.includes('adobeaemcloud.com');
+  const indexHost = isAuthor
+    ? 'https://main--robustlion62394--aemsitestrial.aem.live'
+    : window.location.origin;
+
+  try {
+    const response = await fetch(`${indexHost}/query-index.json`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return getItems(data);
+  } catch (error) {
+    return [];
+  }
 }
 
 function getPath(item) {
