@@ -1,5 +1,4 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
-import { getAEMPublish } from '../../scripts/endpointconfig.js';
 import {
   getDecision,
   getTargetConfig,
@@ -92,11 +91,9 @@ async function loadIndex() {
   const responses = await Promise.all(
     INDEX_SOURCES.map(async (source) => {
       try {
-        // Fetch using absolute window origin to avoid cross-domain/CORS failures in UE iframe
         const response = await fetch(source);
         if (!response.ok) return null;
-        const data = await response.json();
-        return data;
+        return await response.json();
       } catch (error) {
         return null;
       }
