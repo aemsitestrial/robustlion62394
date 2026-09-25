@@ -89,19 +89,14 @@ function getItems(data) {
 }
 
 async function loadIndex() {
-  const configuredOrigin = getAEMPublish();
-  const codeOrigin = new URL(import.meta.url).origin;
-  const publishOrigin = configuredOrigin.includes('.adobeaemcloud.com')
-    ? codeOrigin
-    : configuredOrigin;
   const responses = await Promise.all(
     INDEX_SOURCES.map(async (source) => {
       try {
-        const response = await fetch(new URL(source, publishOrigin));
-        const contentType = response.headers.get('content-type') || '';
-        return response.ok && contentType.includes('application/json')
-          ? response.json()
-          : null;
+        // Fetch using absolute window origin to avoid cross-domain/CORS failures in UE iframe
+        const response = await fetch(source);
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data;
       } catch (error) {
         return null;
       }
