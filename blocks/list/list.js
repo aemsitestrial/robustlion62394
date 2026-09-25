@@ -1,4 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
+import { getAEMPublish } from '../../scripts/endpointconfig.js';
 import {
   getDecision,
   getTargetConfig,
@@ -88,11 +89,15 @@ function getItems(data) {
 }
 
 async function loadIndex() {
+  const publishOrigin = getAEMPublish();
   const responses = await Promise.all(
     INDEX_SOURCES.map(async (source) => {
       try {
-        const response = await fetch(source);
-        return response.ok ? response.json() : null;
+        const response = await fetch(new URL(source, publishOrigin));
+        const contentType = response.headers.get('content-type') || '';
+        return response.ok && contentType.includes('application/json')
+          ? response.json()
+          : null;
       } catch (error) {
         return null;
       }
