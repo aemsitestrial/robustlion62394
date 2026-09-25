@@ -7,7 +7,10 @@ function normalizeBaseUrl(value, fallback = '') {
 
 function getConfigValue(key, fallback = '') {
   const config = typeof window !== 'undefined' ? window.hlx?.config : undefined;
-  const value = config?.[key] ?? fallback;
+  const nestedValue = key
+    .split('.')
+    .reduce((value, segment) => value?.[segment], config);
+  const value = config?.[key] ?? nestedValue ?? fallback;
   return normalizeBaseUrl(value, fallback);
 }
 
