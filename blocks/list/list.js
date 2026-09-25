@@ -69,13 +69,16 @@ function getBoolean(block, name, fallback = false) {
 
 function normalizePath(path) {
   if (!path) return '/';
+  let cleanPath = path;
   try {
-    return (
-      new URL(path, window.location.origin).pathname.replace(/\/+$/, '') || '/'
-    );
+    cleanPath = new URL(path, window.location.origin).pathname;
   } catch (error) {
-    return path.split('?')[0].replace(/\/+$/, '') || '/';
+    [cleanPath] = path.split('?');
   }
+  cleanPath = cleanPath.replace(/\/+$/, '') || '/';
+  if (cleanPath === '/index') return '/';
+  if (cleanPath.startsWith('/index/')) return cleanPath.replace(/^\/index/, '');
+  return cleanPath;
 }
 
 function getItems(data) {
@@ -142,21 +145,16 @@ function getContentTags(item) {
 }
 
 function formatDate(value, format) {
-  const date = new Date(value);
+  let date = new Date(value);
+  if (Number.isNaN(date.valueOf()) && !Number.isNaN(Number(value))) {
+    const numericTimestamp = Number(value);
+    date = new Date(numericTimestamp > 1e11 ? numericTimestamp : numericTimestamp * 1000);
+  }
   if (Number.isNaN(date.valueOf())) return value;
+
   const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
   ];
   const shortMonths = months.map((month) => month.slice(0, 3));
   const tokens = {
@@ -178,13 +176,17 @@ function formatDate(value, format) {
 function matchesParent(item, parentPage, childDepth) {
   const path = normalizePath(getPath(item));
   const parent = normalizePath(parentPage);
-  if (parent === '/') return path !== '/';
+
+  if (path === parent) return false;
+
+  if (parent === '/') {
+    const rootDepth = path.slice(1).split('/').filter(Boolean).length;
+    return rootDepth > 0 && rootDepth <= childDepth;
+  }
+
   if (!path.startsWith(`${parent}/`)) return false;
-  const depth = path
-    .slice(parent.length + 1)
-    .split('/')
-    .filter(Boolean).length;
-  return depth <= childDepth;
+  const depth = path.slice(parent.length + 1).split('/').filter(Boolean).length;
+  return depth > 0 && depth <= childDepth;
 }
 
 function filterItems(items, config) {
@@ -197,36 +199,30 @@ function filterItems(items, config) {
   if (config.listType === 'children') {
     result = result.filter((item) => matchesParent(item, parentPage, config.childDepth));
   } else if (config.listType === 'search') {
-    const terms = config.searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+    const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
     result = result.filter((item) => {
       const haystack = `${getTitle(item)} ${getDescription(item)} ${getPath(item)}`.toLowerCase();
-      return (
-        terms.every((term) => haystack.includes(term))
-        && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER)
-      );
+      const matchesSearch = !terms.length || terms.every((term) => haystack.includes(term));
+      return matchesSearch && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER);
     });
   } else if (config.listType === 'tags') {
-    const tags = config.tags
+    const tags = (config.tags || '')
       .split(',')
-      .map((tag) => tag.trim())
+      .map((tag) => tag.trim().toLowerCase())
       .filter(Boolean);
     result = result.filter((item) => {
-      const itemTags = getTags(item);
+      const itemTags = getContentTags(item);
       const matches = config.tagMatch === 'all'
         ? tags.every((tag) => itemTags.includes(tag))
         : tags.some((tag) => itemTags.includes(tag));
-      return (
-        matches && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER)
-      );
+      return matches && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER);
     });
   }
 
   result.sort((left, right) => {
     const a = config.orderBy === 'modified' ? getModified(left) : getTitle(left);
     const b = config.orderBy === 'modified' ? getModified(right) : getTitle(right);
-    const comparison = String(a).localeCompare(String(b), undefined, {
-      numeric: true,
-    });
+    const comparison = String(a).localeCompare(String(b), undefined, { numeric: true });
     return config.sortOrder === 'descending' ? -comparison : comparison;
   });
 
