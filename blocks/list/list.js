@@ -6,6 +6,52 @@ import {
   setPersonalizationAttributes,
 } from '../../scripts/target-personalization.js';
 
+// Embedded Mock Dataset replacing query-index.json
+const MOCK_INDEX_DATA = [
+  {
+    path: '/index/news/aem-cloud-updates',
+    title: 'AEM Cloud Updates',
+    description: 'Latest updates and announcements for AEM Cloud Service.',
+    lastModified: '1790314737',
+    tags: 'cloud, updates',
+  },
+  {
+    path: '/index/news/universal-editor-guide',
+    title: 'Universal Editor Guide',
+    description: 'Learn how to create and edit content with Universal Editor.',
+    lastModified: '1790315260',
+    tags: 'editor, guide',
+  },
+  {
+    path: '/index/news/edge-delivery-performance',
+    title: 'Edge Delivery Performance',
+    description: 'Performance improvements available with Edge Delivery Services.',
+    lastModified: '1790315648',
+    tags: 'performance, speed',
+  },
+  {
+    path: '/index/news/universal-editor-guide/advanced-architecture-details',
+    title: 'Advanced Architecture Details',
+    description: 'Detailed architecture and implementation information.',
+    lastModified: '1790315812',
+    tags: 'architecture, guide',
+  },
+  {
+    path: '/list',
+    title: 'List Block Documentation',
+    description: 'Documentation for data-driven aggregation blocks.',
+    lastModified: '1790315905',
+    tags: 'docs',
+  },
+  {
+    path: '/dummy-header',
+    title: 'Dummy Header Overview',
+    description: 'Overview of dummy header component structure.',
+    lastModified: '1790315909',
+    tags: 'header',
+  },
+];
+
 function getElementValue(element) {
   return (
     element.dataset.value
@@ -89,19 +135,8 @@ function getItems(data) {
 }
 
 async function loadIndex() {
-  const isAuthor = window.location.hostname.includes('adobeaemcloud.com');
-  const indexHost = isAuthor
-    ? 'https://main--robustlion62394--aemsitestrial.aem.live'
-    : window.location.origin;
-
-  try {
-    const response = await fetch(`${indexHost}/query-index.json`);
-    if (!response.ok) return [];
-    const data = await response.json();
-    return getItems(data);
-  } catch (error) {
-    return [];
-  }
+  // Uses in-memory mock index data directly to ensure immediate reliability
+  return getItems(MOCK_INDEX_DATA);
 }
 
 function getPath(item) {
