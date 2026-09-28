@@ -15,19 +15,54 @@ function getElementValue(element) {
 }
 
 function getFieldElements(block, name) {
-  const elements = [...block.querySelectorAll(`[data-aue-prop="${name}"]`)]
-    .filter((element) => element !== block);
-  if (block.getAttribute('data-aue-prop') === name) elements.unshift(block);
+  const lowerName = name.toLowerCase();
+
+  // Collect data-aue-prop matches case-insensitively
+  const elements = [...block.querySelectorAll('[data-aue-prop]')].filter(
+    (element) => element !== block
+      && element.getAttribute('data-aue-prop').toLowerCase() === lowerName,
+  );
+
+  if (block.getAttribute('data-aue-prop')?.toLowerCase() === lowerName) {
+    elements.unshift(block);
+  }
+
+  // Collect child dataset fields case-insensitively
   [...block.children]
-    .filter((child) => child.dataset?.field === name && !elements.includes(child))
+    .filter((child) => {
+      const field = child.dataset?.field || '';
+      return field.toLowerCase() === lowerName && !elements.includes(child);
+    })
     .forEach((child) => elements.push(child));
+
   return elements;
 }
 
 function getField(block, name, fallback = '') {
   const [prop] = getFieldElements(block, name);
   if (prop) return getElementValue(prop);
+
+  // Fallback check dataset keys (camelCase or lowercase)
+  const lowerName = name.toLowerCase();
   if (block.dataset[name] !== undefined) return block.dataset[name];
+  if (block.dataset[lowerName] !== undefined) return block.dataset[lowerName];
+
+  // Fallback parsing key-value text structures in decorated divs (using .find instead of for..of)
+  const rows = [...block.children];
+  const targetRow = rows.find((row) => {
+    const cols = [...row.children];
+    if (cols.length >= 2) {
+      const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
+      return key === lowerName.replace(/[-_]/g, '');
+    }
+    return false;
+  });
+
+  if (targetRow) {
+    const cols = [...targetRow.children];
+    const link = cols[1].querySelector('a');
+    return link ? (link.getAttribute('href') || link.textContent.trim()) : cols[1].textContent.trim();
+  }
 
   if (name === 'listType') {
     const serialized = block.textContent.trim().toLowerCase();
@@ -173,7 +208,7 @@ function formatDate(value, format) {
   );
 }
 
-function matchesParent(item, parentPage, childDepth) {
+function matchesParent(item, parentPage, childDepth = Number.MAX_SAFE_INTEGER) {
   const path = normalizePath(getPath(item));
   const parent = normalizePath(parentPage);
 
@@ -190,20 +225,24 @@ function matchesParent(item, parentPage, childDepth) {
 }
 
 function filterItems(items, config) {
-  const parentPage = config.parentPage
-    || config.searchIn
-    || config.tagsParentPage
-    || normalizePath(window.location.pathname);
+  const explicitParent = config.parentPage || config.searchIn || config.tagsParentPage;
+  const parentPage = explicitParent ? normalizePath(explicitParent) : null;
+
   let result = items.filter((item) => getPath(item));
 
   if (config.listType === 'children') {
-    result = result.filter((item) => matchesParent(item, parentPage, config.childDepth));
+    const targetParent = parentPage || normalizePath(window.location.pathname);
+    result = result.filter((item) => matchesParent(item, targetParent, config.childDepth));
   } else if (config.listType === 'search') {
     const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
     result = result.filter((item) => {
       const haystack = `${getTitle(item)} ${getDescription(item)} ${getPath(item)}`.toLowerCase();
-      const matchesSearch = !terms.length || terms.every((term) => haystack.includes(term));
-      return matchesSearch && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER);
+      const matchesSearch = terms.length > 0 && terms.every((term) => haystack.includes(term));
+      const matchesPath = parentPage
+        ? matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER)
+        : true;
+
+      return matchesSearch && matchesPath;
     });
   } else if (config.listType === 'tags') {
     const tags = (config.tags || '')
@@ -215,7 +254,11 @@ function filterItems(items, config) {
       const matches = config.tagMatch === 'all'
         ? tags.every((tag) => itemTags.includes(tag))
         : tags.some((tag) => itemTags.includes(tag));
-      return matches && matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER);
+      const matchesPath = parentPage
+        ? matchesParent(item, parentPage, Number.MAX_SAFE_INTEGER)
+        : true;
+
+      return matches && matchesPath;
     });
   }
 
@@ -368,7 +411,7 @@ export default async function decorate(block) {
     searchIn: getField(block, 'searchIn'),
     tagsParentPage: getField(block, 'tagsParentPage'),
     childDepth: Math.max(1, Number(getField(block, 'childDepth', '1')) || 1),
-    searchQuery: getField(block, 'searchQuery'),
+    searchQuery: getField(block, 'searchQuery') || getField(block, 'searchquery'),
     tags: getField(block, 'tags'),
     tagMatch: getField(block, 'tagMatch', 'any'),
     orderBy: getField(block, 'orderBy', 'title'),
@@ -382,6 +425,7 @@ export default async function decorate(block) {
     personalizationEnabled: getBoolean(block, 'personalizationEnabled'),
     ...getTargetConfig('list'),
   };
+
   const defaultItems = await buildDefaultList(block, config);
   const id = getField(block, 'id');
   if (id) block.id = id;
