@@ -21,7 +21,7 @@ indices:
         select: head > meta[property="og:image:alt"]
         value: attribute(el, "content")
       tags:
-        select: head > meta[name="tags"]
+        select: head > meta[name="cq-tags"]
         value: attribute(el, "content")
       persona:
         select: head > meta[name="persona"]

@@ -4,9 +4,9 @@
       "title": "List",
       "id": "list",
       "plugins": {
-        "da": {
+        "da": {   
           "rows": 1,
-          "columns": 2
+          "columns": 2  
         },
         "xwalk": {
           "page": {
