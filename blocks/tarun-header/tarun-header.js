@@ -41,6 +41,7 @@ function getProp(block, name, fallback = '') {
 export default function decorate(block) {
   // 1. Extract Basic Properties
   const config = {
+    headerVariant: getProp(block, 'headerVariant', 'standard').toLowerCase(),
     tcsLogo: getProp(block, 'tcsLogo'),
     tcsLogoLink: getProp(block, 'tcsLogoLink', '/'),
     tataLogo: getProp(block, 'tataLogo'),
@@ -68,6 +69,8 @@ export default function decorate(block) {
 
   // 3. Rebuild Clean Block DOM
   block.textContent = '';
+  block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
+  block.classList.add(`variant-${config.headerVariant}`);
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';
