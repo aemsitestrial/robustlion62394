@@ -136,20 +136,46 @@
     top: 4px;
   }
 
+  .tarun-header.variant-centered nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon {
+    background-color: transparent;
+  }
+
+  .tarun-header.variant-centered nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::before {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .tarun-header.variant-centered nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::after {
+    transform: translateY(0) rotate(-45deg);
+  }
+
   .tarun-header.variant-centered .nav-sections {
     display: none;
-    margin-left: auto;
-    margin-right: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    margin: 0;
+    padding: 24px 80px;
+    box-sizing: border-box;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 8px 16px rgb(0 0 0 / 10%);
   }
 
   .tarun-header.variant-centered nav#tarun-nav[aria-expanded="true"] .nav-sections {
-    display: flex;
+    display: block;
+  }
+
+  .tarun-header.variant-centered .nav-sections .tarun-nav-list {
+    justify-content: center;
+    gap: 2.5rem;
   }
 
   .tarun-header.variant-centered .nav-brand-primary {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    flex: 0 0 auto;
+    transform: none;
   }
 
   .tarun-header.variant-centered .nav-brand-secondary {
@@ -179,6 +205,16 @@
     transform: none;
   }
 
+  .tarun-header.variant-centered nav#tarun-nav {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .tarun-header.variant-centered .nav-hamburger {
+    display: block;
+    flex: 0 0 auto;
+  }
+
   .tarun-header .nav-brand-primary img {
     width: 100px;
     height: 24px;
@@ -186,6 +222,16 @@
 
   .tarun-header .nav-brand-secondary {
     display: none;
+  }
+
+  .tarun-header.variant-centered .nav-brand-secondary {
+    display: block;
+    margin-left: auto;
+  }
+
+  .tarun-header.variant-centered .nav-brand-secondary img {
+    width: 42px;
+    height: 36px;
   }
 
   .tarun-header .nav-sections {
@@ -201,6 +247,10 @@
     box-sizing: border-box;
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+
+  .tarun-header.variant-centered .nav-sections {
+    top: 100%;
   }
 
   .tarun-header.variant-compact .nav-sections {
