@@ -1,62 +1,44 @@
 /* ==========================================================================
-   TARUN HEADER BLOCK (NORMAL INLINE FLOW)
+   BASIC TARUN HEADER SHELL
    ========================================================================== */
 .tarun-header-wrapper {
-  width: 100%;
-  background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  height: 124px;
 }
 
 .tarun-header .tarun-nav-wrapper {
   position: relative;
+  z-index: 10;
   width: 100%;
   background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .tarun-header nav#tarun-nav {
   box-sizing: border-box;
   margin: 0 auto;
   max-width: 1440px;
-  min-height: 80px;
-  padding: 20px 40px;
+  height: 124px;
+  padding: 40px 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* Primary TCS Logo Strict Sizing */
-.tarun-header .nav-brand-primary {
-  display: flex;
-  align-items: center;
-  max-width: 160px;
-  max-height: 50px;
-}
-
-.tarun-header .nav-brand-primary picture,
+/* Logos */
 .tarun-header .nav-brand-primary img {
   width: 146px;
-  height: 35px;
-  max-width: 100%;
-  max-height: 100%;
+  height: 34.8px;
   object-fit: contain;
-  display: block;
 }
 
-/* Secondary TATA Logo Strict Sizing */
-.tarun-header .nav-brand-secondary {
-  display: flex;
-  align-items: center;
-  max-width: 80px;
-  max-height: 50px;
-}
-
-.tarun-header .nav-brand-secondary picture,
 .tarun-header .nav-brand-secondary img {
   width: 50px;
   height: 44px;
-  max-width: 100%;
-  max-height: 100%;
   object-fit: contain;
+}
+
+.tarun-header .nav-brand-primary picture,
+.tarun-header .nav-brand-secondary picture {
   display: block;
 }
 
@@ -65,11 +47,51 @@
   text-decoration: none;
   font-weight: 700;
   color: #1e1e1e;
-  display: flex;
-  align-items: center;
 }
 
-/* Desktop Links & Dropdowns */
+.tarun-header.variant-compact nav#tarun-nav {
+  height: 80px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.tarun-header.variant-compact .nav-brand-primary img {
+  width: 112px;
+  height: 28px;
+}
+
+.tarun-header.variant-dark .tarun-nav-wrapper {
+  background-color: #1e1e1e;
+  border-bottom-color: #333;
+}
+
+.tarun-header.variant-dark .nav-brand-primary a,
+.tarun-header.variant-dark .nav-brand-secondary a,
+.tarun-header.variant-dark .nav-sections a {
+  color: #fff;
+}
+
+.tarun-header.variant-dark .nav-hamburger-icon,
+.tarun-header.variant-dark .nav-hamburger-icon::before,
+.tarun-header.variant-dark .nav-hamburger-icon::after {
+  background-color: #fff;
+}
+
+.tarun-header.variant-dark .nav-sections {
+  background-color: #1e1e1e;
+}
+
+.tarun-header.variant-centered nav#tarun-nav {
+  position: relative;
+}
+
+.tarun-header.variant-centered .nav-brand-primary {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Desktop Links */
 @media (width >= 1025px) {
   .tarun-header .nav-hamburger {
     display: none;
@@ -90,38 +112,34 @@
     font-size: 1rem;
   }
 
-  /* Submenu Dropdown Card */
-  .tarun-header .nav-sections li.has-submenu {
-    position: relative;
-  }
-
-  .tarun-header .nav-sections li.has-submenu > ul {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 200px;
-    background-color: #fff;
-    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    padding: 0.75rem 0;
-    list-style: none;
-    z-index: 1001;
-  }
-
-  .tarun-header .nav-sections li.has-submenu:hover > ul {
-    display: block;
+  .tarun-header.variant-centered .nav-sections {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
-/* Mobile & Tablet Layout */
+/* Mobile Layout */
 @media (width <= 1024px) {
+  .tarun-header-wrapper {
+    height: 64px;
+  }
+
   .tarun-header nav#tarun-nav {
-    min-height: 64px;
+    height: 64px;
     padding: 12px 20px;
   }
 
-  .tarun-header .nav-brand-primary picture,
+  .tarun-header.variant-compact nav#tarun-nav {
+    height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .tarun-header.variant-centered .nav-brand-primary {
+    position: static;
+    transform: none;
+  }
+
   .tarun-header .nav-brand-primary img {
     width: 100px;
     height: 24px;
@@ -133,14 +151,22 @@
 
   .tarun-header .nav-sections {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 64px;
     left: 0;
+    z-index: 10;
     width: 100%;
+    height: calc(100dvh - 64px);
     background: #fff;
-    padding: 1.5rem;
+    padding: 2rem;
     box-sizing: border-box;
-    box-shadow: 0 8px 16px rgb(0 0 0 / 10%);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .tarun-header.variant-compact .nav-sections {
+    top: 56px;
+    height: calc(100dvh - 56px);
   }
 
   .tarun-header .nav-sections .tarun-nav-list {
@@ -150,6 +176,12 @@
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+
+  .tarun-header .nav-sections a {
+    color: #1e1e1e;
+    text-decoration: none;
+    font-size: 1rem;
   }
 
   .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-sections {
@@ -180,5 +212,17 @@
   .tarun-header .nav-hamburger-icon::after {
     content: "";
     transform: translateY(4px);
+  }
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon {
+    background-color: transparent;
+  }
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::before {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::after {
+    transform: translateY(0) rotate(-45deg);
   }
 }

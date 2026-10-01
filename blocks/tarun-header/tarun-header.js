@@ -1,65 +1,67 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 
 /**
- * Safely extracts property elements or child values
- * @param {Element} block The block container element
- * @param {string} name Property name
- * @param {string} fallback Default string value
- * @returns {string} Resolved image source URL or text string
+ * Helper to safely extract property elements or child values
  */
 function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
+  const fieldOrder = ['headerVariant', 'tcsLogo', 'tcsLogoLink', 'tataLogo', 'tataLogoLink', 'menu'];
+
+  const getValue = (element) => {
+    if (!element) return '';
+    const image = element.matches('img') ? element : element.querySelector('picture img, img');
+    if (image) return image.getAttribute('src') || image.src;
+    const anchor = element.matches('a') ? element : element.querySelector('a');
+    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+    return element.dataset.value || element.textContent.trim();
+  };
 
   // 1. Direct dataset or data-aue-prop lookup
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lower] !== undefined) return block.dataset[lower];
-
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
-  if (attrElem) {
-    const img = attrElem.matches('img') ? attrElem : attrElem.querySelector('picture img, img');
-    if (img) return img.src;
-    const anchor = attrElem.querySelector('a');
-    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
-    return attrElem.dataset.value || attrElem.textContent.trim();
-  }
+  if (attrElem) return getValue(attrElem);
 
-  // 2. Table row scanning
+  // 2. Table row fallback scanning
   const rows = [...block.children];
-  const targetRow = rows.find((row) => {
+  for (let index = 0; index < rows.length; index += 1) {
+    const row = rows[index];
     const cols = [...row.children];
     if (cols.length >= 2) {
       const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
-      return key === lower.replace(/[-_]/g, '');
+      if (key === lower.replace(/[-_]/g, '')) {
+        return getValue(cols[1]);
+      }
     }
-    return false;
-  });
+  }
 
-  if (targetRow) {
-    const cols = [...targetRow.children];
-    const img = cols[1].querySelector('img');
-    if (img) return img.src;
-    const anchor = cols[1].querySelector('a');
-    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
-    return cols[1].textContent.trim();
+  // 3. Published Universal Editor content stores model fields in row order.
+  const fieldIndex = fieldOrder.indexOf(name);
+  if (fieldIndex >= 0 && rows[fieldIndex]) {
+    const cols = [...rows[fieldIndex].children];
+    return getValue(cols.length > 1 ? cols[1] : rows[fieldIndex]) || fallback;
   }
 
   return fallback;
 }
 
-/**
- * Main decorator for the basic Tarun Header block
- * @param {Element} block The block container element
- */
 export default function decorate(block) {
+  // 1. Extract Basic Properties
   const config = {
+    headerVariant: getProp(block, 'headerVariant', 'standard').toLowerCase(),
     tcsLogo: getProp(block, 'tcsLogo'),
     tcsLogoLink: getProp(block, 'tcsLogoLink', '/'),
     tataLogo: getProp(block, 'tataLogo'),
     tataLogoLink: getProp(block, 'tataLogoLink', 'https://www.tata.com'),
   };
+  const supportedVariants = ['standard', 'compact', 'dark', 'centered'];
+  if (!supportedVariants.includes(config.headerVariant)) config.headerVariant = 'standard';
 
-  // Extract Menu Content
-  const menuSource = block.querySelector('[data-aue-prop="menu"]') || block.querySelector('ul');
+  // 2. Extract Menu Content
+  const menuRow = [...block.children][5];
+  const menuSource = block.querySelector('[data-aue-prop="menu"]')
+    || (menuRow && (menuRow.children[1] || menuRow))
+    || block.querySelector('ul');
   let navList = document.createElement('ul');
   navList.className = 'tarun-nav-list';
 
@@ -68,11 +70,6 @@ export default function decorate(block) {
     if (ul.tagName === 'UL') {
       navList = ul.cloneNode(true);
       navList.className = 'tarun-nav-list';
-      navList.querySelectorAll(':scope > li').forEach((li) => {
-        if (li.querySelector('ul')) {
-          li.classList.add('has-submenu');
-        }
-      });
     } else {
       menuSource.querySelectorAll('a[href]').forEach((link) => {
         const item = document.createElement('li');
@@ -82,8 +79,10 @@ export default function decorate(block) {
     }
   }
 
-  // Clear Block Content
+  // 3. Rebuild Clean Block DOM
   block.textContent = '';
+  block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
+  block.classList.add(`variant-${config.headerVariant}`);
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';
