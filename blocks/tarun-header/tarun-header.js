@@ -169,9 +169,8 @@ export default function decorate(block) {
 
   // Window Resize & Keyboard Event Listeners
   window.addEventListener('resize', () => {
-    if (window.innerWidth >= 1025 && config.headerVariant !== 'centered') {
-      document.body.style.overflowY = '';
-    }
+    // Reconcile menu state when crossing the responsive breakpoint.
+    toggleMenu(false);
   });
 
   window.addEventListener('keydown', (e) => {
