@@ -269,10 +269,13 @@
   border-bottom-color: #333;
 }
  
+.tarun-header[data-variant="dark"] .nav-brand-primary a,
+.tarun-header[data-variant="dark"] .nav-brand-secondary a,
 .tarun-header.variant-dark .nav-brand-primary a,
 .tarun-header.variant-dark .nav-brand-secondary a,
-.tarun-header.variant-dark nav#tarun-nav .nav-sections a {
-  color: #fff;
+.tarun-header.variant-dark nav#tarun-nav .nav-sections a:any-link,
+.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections a:any-link {
+  color: #fff !important;
 }
  
 .tarun-header.variant-dark .nav-sections {
