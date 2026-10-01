@@ -1,16 +1,26 @@
 /* ==========================================================================
+
    BASIC TARUN HEADER SHELL
+
    ========================================================================== */
+
 .tarun-header-wrapper {
   height: 124px;
+
 }
+
+ 
 
 .tarun-header .tarun-nav-wrapper {
   position: relative;
+  z-index: 10;
   width: 100%;
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
+
 }
+
+ 
 
 .tarun-header nav#tarun-nav {
   box-sizing: border-box;
@@ -21,74 +31,93 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
 }
 
+ 
+
 /* Logos */
+
 .tarun-header .nav-brand-primary img {
   width: 146px;
   height: 34.8px;
   object-fit: contain;
+
 }
+
+ 
 
 .tarun-header .nav-brand-secondary img {
   width: 50px;
   height: 44px;
   object-fit: contain;
+
 }
+
+ 
 
 .tarun-header .nav-brand-primary picture,
+
 .tarun-header .nav-brand-secondary picture {
   display: block;
+
 }
 
+ 
+
 .tarun-header .nav-brand-primary a,
+
 .tarun-header .nav-brand-secondary a {
   text-decoration: none;
   font-weight: 700;
   color: #1e1e1e;
+
 }
+
+ 
 
 .tarun-header.variant-compact nav#tarun-nav {
   height: 80px;
   padding-top: 20px;
   padding-bottom: 20px;
+
 }
+
+ 
 
 .tarun-header.variant-compact .nav-brand-primary img {
   width: 112px;
   height: 28px;
+
 }
 
-.tarun-header.variant-dark .tarun-nav-wrapper {
-  background-color: #1e1e1e;
-  border-bottom-color: #333;
-}
-
-.tarun-header.variant-dark .nav-brand-primary a,
-.tarun-header.variant-dark .nav-brand-secondary a,
-.tarun-header.variant-dark .nav-sections a {
-  color: #fff;
-}
-
-.tarun-header.variant-dark .nav-sections {
-  background-color: #1e1e1e;
-}
+ 
 
 .tarun-header.variant-centered nav#tarun-nav {
   position: relative;
+
 }
+
+ 
 
 .tarun-header.variant-centered .nav-brand-primary {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+
 }
 
+ 
+
 /* Desktop Links */
+
 @media (width >= 1025px) {
   .tarun-header .nav-hamburger {
     display: none;
+
   }
+
+ 
 
   .tarun-header .nav-sections .tarun-nav-list {
     display: flex;
@@ -96,63 +125,196 @@
     list-style: none;
     margin: 0;
     padding: 0;
+
   }
+
+ 
 
   .tarun-header .nav-sections a {
     color: #1e1e1e;
     text-decoration: none;
     font-weight: 500;
     font-size: 1rem;
+
   }
+
+ 
+
+  .tarun-header.variant-centered nav#tarun-nav {
+    justify-content: flex-start;
+    gap: 24px;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger {
+    display: block;
+    flex: 0 0 auto;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    padding: 8px;
+    background: transparent;
+    cursor: pointer;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger-icon,
+
+  .tarun-header.variant-centered .nav-hamburger-icon::before,
+
+  .tarun-header.variant-centered .nav-hamburger-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: #1e1e1e;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger-icon::before,
+
+  .tarun-header.variant-centered .nav-hamburger-icon::after {
+    content: '';
+    position: relative;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger-icon::before {
+    top: -6px;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-hamburger-icon::after {
+    top: 4px;
+
+  }
+
+ 
 
   .tarun-header.variant-centered .nav-sections {
+    display: none;
     margin-left: auto;
-    margin-right: auto;
+    margin-right: 0;
+
   }
+
+ 
+
+  .tarun-header.variant-centered nav#tarun-nav[aria-expanded="true"] .nav-sections {
+    display: flex;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-brand-primary {
+    position: static;
+    flex: 0 0 auto;
+    transform: none;
+
+  }
+
+ 
+
+  .tarun-header.variant-centered .nav-brand-secondary {
+    margin-left: auto;
+
+  }
+
 }
 
+ 
+
 /* Mobile Layout */
+
 @media (width <= 1024px) {
   .tarun-header-wrapper {
     height: 64px;
+
   }
+
+ 
 
   .tarun-header nav#tarun-nav {
     height: 64px;
     padding: 12px 20px;
+
   }
+
+ 
 
   .tarun-header.variant-compact nav#tarun-nav {
     height: 56px;
     padding-top: 8px;
     padding-bottom: 8px;
+
   }
+
+ 
 
   .tarun-header.variant-centered .nav-brand-primary {
     position: static;
     transform: none;
+
   }
+
+ 
 
   .tarun-header .nav-brand-primary img {
     width: 100px;
     height: 24px;
+
   }
+
+ 
 
   .tarun-header .nav-brand-secondary {
     display: none;
+
   }
+
+ 
 
   .tarun-header .nav-sections {
     display: none;
     position: fixed;
     top: 64px;
     left: 0;
+    z-index: 10;
     width: 100%;
     height: calc(100dvh - 64px);
     background: #fff;
     padding: 2rem;
     box-sizing: border-box;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
   }
+
+ 
+
+  .tarun-header.variant-compact .nav-sections {
+    top: 56px;
+    height: calc(100dvh - 56px);
+
+  }
+
+ 
 
   .tarun-header .nav-sections .tarun-nav-list {
     display: flex;
@@ -161,57 +323,133 @@
     list-style: none;
     margin: 0;
     padding: 0;
+
   }
+
+ 
+
+  .tarun-header .nav-sections a {
+    color: #1e1e1e;
+    text-decoration: none;
+    font-size: 1rem;
+
+  }
+
+ 
 
   .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-sections {
     display: block;
+
   }
+
+ 
 
   .tarun-header .nav-hamburger button {
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+
   }
 
+ 
+
   .tarun-header .nav-hamburger-icon,
+
   .tarun-header .nav-hamburger-icon::before,
+
   .tarun-header .nav-hamburger-icon::after {
     display: block;
     width: 22px;
     height: 2px;
     background-color: #1e1e1e;
+
   }
+
+ 
 
   .tarun-header .nav-hamburger-icon::before {
     content: "";
     transform: translateY(-6px);
+
   }
+
+ 
 
   .tarun-header .nav-hamburger-icon::after {
     content: "";
     transform: translateY(4px);
+
   }
+
+ 
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon {
+    background-color: transparent;
+
+  }
+
+ 
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::before {
+    transform: translateY(0) rotate(45deg);
+
+  }
+
+ 
+
+  .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-hamburger-icon::after {
+    transform: translateY(0) rotate(-45deg);
+
+  }
+
 }
 
-/* Keep dark navigation readable after responsive base styles. */
-.tarun-header.variant-dark .nav-sections,
+ 
+
+/* Dark theme overrides must follow responsive base colors. */
+
 .tarun-header.variant-dark .tarun-nav-wrapper {
   background-color: #1e1e1e;
+  border-bottom-color: #333;
+
 }
+
+ 
+
+.tarun-header[data-variant="dark"] .nav-brand-primary a,
+
+.tarun-header[data-variant="dark"] .nav-brand-secondary a,
 
 .tarun-header.variant-dark .nav-brand-primary a,
-.tarun-header.variant-dark .nav-brand-secondary a {
-  color: #fff !important;
-}
+
+.tarun-header.variant-dark .nav-brand-secondary a,
 
 .tarun-header.variant-dark nav#tarun-nav .nav-sections a:any-link,
-.tarun-header.variant-dark nav#tarun-nav .nav-sections li {
+
+.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections a:any-link,
+
+.tarun-header.variant-dark nav#tarun-nav .nav-sections li,
+
+.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections li {
   color: #fff !important;
+
 }
 
+ 
+
+.tarun-header.variant-dark .nav-sections {
+  background-color: #1e1e1e;
+
+}
+
+ 
+
 .tarun-header.variant-dark .nav-hamburger-icon,
+
 .tarun-header.variant-dark .nav-hamburger-icon::before,
+
 .tarun-header.variant-dark .nav-hamburger-icon::after {
   background-color: #fff;
+
 }
