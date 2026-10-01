@@ -1,7 +1,11 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 
 /**
- * Helper to safely extract property elements or child values
+ * Safely extracts property elements or child values
+ * @param {Element} block The block container element
+ * @param {string} name Property name
+ * @param {string} fallback Default fallback string
+ * @returns {string} Extracted property string value
  */
 function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
@@ -16,26 +20,27 @@ function getProp(block, name, fallback = '') {
     return element.dataset.value || element.textContent.trim();
   };
 
-  // 1. Direct dataset or data-aue-prop lookup
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lower] !== undefined) return block.dataset[lower];
+
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
   if (attrElem) return getValue(attrElem);
 
-  // 2. Table row fallback scanning
   const rows = [...block.children];
-  for (let index = 0; index < rows.length; index += 1) {
-    const row = rows[index];
+  const targetRow = rows.find((row) => {
     const cols = [...row.children];
     if (cols.length >= 2) {
       const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
-      if (key === lower.replace(/[-_]/g, '')) {
-        return getValue(cols[1]);
-      }
+      return key === lower.replace(/[-_]/g, '');
     }
+    return false;
+  });
+
+  if (targetRow) {
+    const cols = [...targetRow.children];
+    return getValue(cols[1]);
   }
 
-  // 3. Published Universal Editor content stores model fields in row order.
   const fieldIndex = fieldOrder.indexOf(name);
   if (fieldIndex >= 0 && rows[fieldIndex]) {
     const cols = [...rows[fieldIndex].children];
@@ -45,6 +50,11 @@ function getProp(block, name, fallback = '') {
   return fallback;
 }
 
+/**
+ * Normalizes header variant string
+ * @param {string} value Raw variant string
+ * @returns {string} Validated variant string
+ */
 function normalizeVariant(value) {
   const normalized = String(value).trim().toLowerCase().replace(/\s+/g, '-');
   return ['standard', 'compact', 'dark', 'centered'].includes(normalized)
@@ -53,7 +63,6 @@ function normalizeVariant(value) {
 }
 
 export default function decorate(block) {
-  // 1. Extract Basic Properties
   const config = {
     headerVariant: normalizeVariant(getProp(block, 'headerVariant', 'standard')),
     tcsLogo: getProp(block, 'tcsLogo'),
@@ -61,10 +70,8 @@ export default function decorate(block) {
     tataLogo: getProp(block, 'tataLogo'),
     tataLogoLink: getProp(block, 'tataLogoLink', 'https://www.tata.com'),
   };
-  const supportedVariants = ['standard', 'compact', 'dark', 'centered'];
-  if (!supportedVariants.includes(config.headerVariant)) config.headerVariant = 'standard';
 
-  // 2. Extract Menu Content
+  // Extract Menu Content
   const menuRow = [...block.children][5];
   const menuSource = block.querySelector('[data-aue-prop="menu"]')
     || (menuRow && (menuRow.children[1] || menuRow))
@@ -86,8 +93,23 @@ export default function decorate(block) {
     }
   }
 
-  // 3. Rebuild Clean Block DOM
-  block.textContent = '';
+  // Preserve original Universal Editor DOM nodes in a hidden store to support live editing
+  let ueHiddenStore = block.querySelector('.tarun-ue-store');
+  if (!ueHiddenStore) {
+    ueHiddenStore = document.createElement('div');
+    ueHiddenStore.className = 'tarun-ue-store';
+    ueHiddenStore.style.display = 'none';
+
+    while (block.firstElementChild) {
+      ueHiddenStore.append(block.firstElementChild);
+    }
+  }
+
+  // Remove stale navigation shell if re-decorating live
+  const oldNavWrapper = block.querySelector('.tarun-nav-wrapper');
+  if (oldNavWrapper) oldNavWrapper.remove();
+
+  // Re-apply variant classes & data attributes
   block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
   block.classList.add(`variant-${config.headerVariant}`);
   block.dataset.variant = config.headerVariant;
@@ -156,12 +178,19 @@ export default function decorate(block) {
     nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
     hamburgerButton.setAttribute('aria-expanded', expanded ? 'false' : 'true');
     hamburgerButton.setAttribute('aria-label', expanded ? 'Open menu' : 'Close menu');
-    document.body.style.overflowY = !expanded || window.innerWidth >= 1025 ? '' : 'hidden';
+    document.body.style.overflowY = !expanded && window.innerWidth < 1025 ? 'hidden' : '';
   });
   hamburgerWrapper.append(hamburgerButton);
 
-  // Assemble
+  // Clean up body overflow when resizing to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1025) {
+      document.body.style.overflowY = '';
+    }
+  });
+
+  // Assemble Block
   nav.append(hamburgerWrapper, brandPrimary, navSections, brandSecondary);
   navWrapper.append(nav);
-  block.append(navWrapper);
+  block.append(ueHiddenStore, navWrapper);
 }

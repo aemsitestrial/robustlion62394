@@ -6235,19 +6235,19 @@
         "value": "standard",
         "options": [
           {
-            "name": "Standard",
+            "title": "Standard",
             "value": "standard"
           },
           {
-            "name": "Compact",
+            "title": "Compact",
             "value": "compact"
           },
           {
-            "name": "Dark",
+            "title": "Dark",
             "value": "dark"
           },
           {
-            "name": "Centered",
+            "title": "Centered",
             "value": "centered"
           }
         ]
