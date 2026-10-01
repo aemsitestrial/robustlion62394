@@ -6,11 +6,8 @@
 }
 
 .tarun-header .tarun-nav-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
-  z-index: 1000;
   background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -37,6 +34,11 @@
   width: 50px;
   height: 44px;
   object-fit: contain;
+}
+
+.tarun-header .nav-brand-primary picture,
+.tarun-header .nav-brand-secondary picture {
+  display: block;
 }
 
 .tarun-header .nav-brand-primary a,
@@ -98,6 +100,15 @@
     background: #fff;
     padding: 2rem;
     box-sizing: border-box;
+  }
+
+  .tarun-header .nav-sections .tarun-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .tarun-header nav#tarun-nav[aria-expanded="true"] .nav-sections {

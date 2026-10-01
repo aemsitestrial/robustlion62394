@@ -1,3 +1,5 @@
+import { createOptimizedPicture } from '../../scripts/aem.js';
+
 /**
  * Helper to safely extract property elements or child values
  */
@@ -5,9 +7,11 @@ function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
 
   // 1. Direct dataset or data-aue-prop lookup
+  if (block.dataset[name] !== undefined) return block.dataset[name];
+  if (block.dataset[lower] !== undefined) return block.dataset[lower];
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
   if (attrElem) {
-    const img = attrElem.querySelector('img');
+    const img = attrElem.matches('img') ? attrElem : attrElem.querySelector('picture img, img');
     if (img) return img.src;
     const anchor = attrElem.querySelector('a');
     if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
@@ -53,6 +57,12 @@ export default function decorate(block) {
     if (ul.tagName === 'UL') {
       navList = ul.cloneNode(true);
       navList.className = 'tarun-nav-list';
+    } else {
+      menuSource.querySelectorAll('a[href]').forEach((link) => {
+        const item = document.createElement('li');
+        item.append(link.cloneNode(true));
+        navList.append(item);
+      });
     }
   }
 
@@ -73,10 +83,12 @@ export default function decorate(block) {
   primaryAnchor.href = config.tcsLogoLink;
 
   if (config.tcsLogo) {
-    const img = document.createElement('img');
-    img.src = config.tcsLogo;
-    img.alt = 'Tata Consultancy Services';
-    primaryAnchor.append(img);
+    primaryAnchor.append(createOptimizedPicture(
+      config.tcsLogo,
+      'Tata Consultancy Services',
+      false,
+      [{ width: '300' }],
+    ));
   } else {
     primaryAnchor.textContent = 'TCS';
   }
@@ -96,10 +108,12 @@ export default function decorate(block) {
   secondaryAnchor.rel = 'noopener noreferrer';
 
   if (config.tataLogo) {
-    const img = document.createElement('img');
-    img.src = config.tataLogo;
-    img.alt = 'TATA Group';
-    secondaryAnchor.append(img);
+    secondaryAnchor.append(createOptimizedPicture(
+      config.tataLogo,
+      'TATA Group',
+      false,
+      [{ width: '160' }],
+    ));
   } else {
     secondaryAnchor.textContent = 'TATA';
   }
@@ -110,11 +124,16 @@ export default function decorate(block) {
   hamburgerWrapper.className = 'nav-hamburger';
   const hamburgerButton = document.createElement('button');
   hamburgerButton.type = 'button';
+  hamburgerButton.setAttribute('aria-controls', 'tarun-nav');
   hamburgerButton.setAttribute('aria-label', 'Open menu');
+  hamburgerButton.setAttribute('aria-expanded', 'false');
   hamburgerButton.innerHTML = '<span class="nav-hamburger-icon"></span>';
   hamburgerButton.addEventListener('click', () => {
     const expanded = nav.getAttribute('aria-expanded') === 'true';
     nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    hamburgerButton.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    hamburgerButton.setAttribute('aria-label', expanded ? 'Open menu' : 'Close menu');
+    document.body.style.overflowY = expanded ? '' : 'hidden';
   });
   hamburgerWrapper.append(hamburgerButton);
 
