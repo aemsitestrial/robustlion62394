@@ -29,13 +29,6 @@
         {
           "component": "text-input",
           "valueType": "string",
-          "name": "tcsLogoAlt",
-          "label": "TCS Logo Alt Text",
-          "value": "Tata Consultancy Services"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
           "name": "tcsLogoLink",
           "label": "TCS Logo Target URL",
           "value": "/"
@@ -49,137 +42,16 @@
         {
           "component": "text-input",
           "valueType": "string",
-          "name": "tataLogoAlt",
-          "label": "Tata Logo Alt Text",
-          "value": "TATA Group"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
           "name": "tataLogoLink",
           "label": "Tata Logo Target URL",
           "value": "https://www.tata.com"
         },
         {
-          "component": "container",
-          "name": "navItems",
-          "label": "Navigation Items",
-          "multi": true,
-          "model": "parent-nav-item"
-        },
-        {
-          "component": "boolean",
+          "component": "richtext",
           "valueType": "string",
-          "name": "enableSearch",
-          "label": "Enable Search Icon",
-          "value": "true"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "ctaLabel",
-          "label": "CTA Button Label"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "ctaLink",
-          "label": "CTA Destination URL"
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "ctaTarget",
-          "label": "CTA Open Target",
-          "value": "_self",
-          "options": [
-            { "title": "Same Tab (_self)", "value": "_self" },
-            { "title": "New Tab (_blank)", "value": "_blank" }
-          ]
-        },
-        {
-          "component": "boolean",
-          "valueType": "string",
-          "name": "isSticky",
-          "label": "Enable Sticky Header",
-          "value": "true"
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "headerTheme",
-          "label": "Header Theme",
-          "value": "light",
-          "options": [
-            { "title": "Light Mode (White)", "value": "light" },
-            { "title": "Dark Mode (Dark Gray)", "value": "dark" },
-            { "title": "Transparent Overlay", "value": "transparent" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "parent-nav-item",
-      "fields": [
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "parentTitle",
-          "label": "Parent Item Title (e.g., What We Do)"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "parentUrl",
-          "label": "Parent Target URL (Optional if dropdown)"
-        },
-        {
-          "component": "boolean",
-          "valueType": "string",
-          "name": "enableSubmenu",
-          "label": "Enable Submenu / Has Children",
-          "value": "false"
-        },
-        {
-          "component": "container",
-          "name": "children",
-          "label": "Child Links",
-          "multi": true,
-          "model": "child-nav-item"
-        }
-      ]
-    },
-    {
-      "id": "child-nav-item",
-      "fields": [
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "childTitle",
-          "label": "Child Item Title (e.g., Services)"
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "childUrl",
-          "label": "Child Target URL"
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "childTarget",
-          "label": "Link Target",
-          "value": "_self",
-          "options": [
-            { "title": "Same Tab (_self)", "value": "_self" },
-            { "title": "New Tab (_blank)", "value": "_blank" }
-          ]
-        },
-        {
-          "component": "text-input",
-          "valueType": "string",
-          "name": "childDescription",
-          "label": "Short Description (Optional Mega-Menu Excerpt)"
+          "name": "menu",
+          "label": "Navigation Links",
+          "description": "Add top-level links or a bulleted list for submenus."
         }
       ]
     }
