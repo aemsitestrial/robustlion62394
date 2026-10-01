@@ -35,7 +35,7 @@ function getProp(block, name, fallback = '') {
     }
   }
 
-  // 3. Published Universal Editor content stores model fields in row order.
+  // 3. Published Universal Editor content stores model fields in row order fallback
   const fieldIndex = fieldOrder.indexOf(name);
   if (fieldIndex >= 0 && rows[fieldIndex]) {
     const cols = [...rows[fieldIndex].children];
@@ -61,8 +61,6 @@ export default function decorate(block) {
     tataLogo: getProp(block, 'tataLogo'),
     tataLogoLink: getProp(block, 'tataLogoLink', 'https://www.tata.com'),
   };
-  const supportedVariants = ['standard', 'compact', 'dark', 'centered'];
-  if (!supportedVariants.includes(config.headerVariant)) config.headerVariant = 'standard';
 
   // 2. Extract Menu Content
   const menuRow = [...block.children][5];
@@ -74,7 +72,7 @@ export default function decorate(block) {
 
   if (menuSource) {
     const ul = menuSource.querySelector('ul') || menuSource;
-    if (ul.tagName === 'UL') {
+    if (ul && ul.tagName === 'UL') {
       navList = ul.cloneNode(true);
       navList.className = 'tarun-nav-list';
     } else {
@@ -142,7 +140,7 @@ export default function decorate(block) {
   }
   brandSecondary.append(secondaryAnchor);
 
-  // Mobile Hamburger Toggle
+  // Mobile & Centered Hamburger Toggle
   const hamburgerWrapper = document.createElement('div');
   hamburgerWrapper.className = 'nav-hamburger';
   const hamburgerButton = document.createElement('button');
@@ -151,13 +149,36 @@ export default function decorate(block) {
   hamburgerButton.setAttribute('aria-label', 'Open menu');
   hamburgerButton.setAttribute('aria-expanded', 'false');
   hamburgerButton.innerHTML = '<span class="nav-hamburger-icon"></span>';
-  hamburgerButton.addEventListener('click', () => {
-    const expanded = nav.getAttribute('aria-expanded') === 'true';
-    nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-    hamburgerButton.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-    hamburgerButton.setAttribute('aria-label', expanded ? 'Open menu' : 'Close menu');
-    document.body.style.overflowY = !expanded || window.innerWidth >= 1025 ? '' : 'hidden';
+
+  const toggleMenu = (openState) => {
+    const isExpanded = openState !== undefined
+      ? openState
+      : nav.getAttribute('aria-expanded') !== 'true';
+
+    nav.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    hamburgerButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    hamburgerButton.setAttribute('aria-label', isExpanded ? 'Close menu' : 'Open menu');
+
+    const isDesktop = window.innerWidth >= 1025;
+    document.body.style.overflowY = !isExpanded || isDesktop ? '' : 'hidden';
+  };
+
+  hamburgerButton.addEventListener('click', () => toggleMenu());
+
+  // Window resize & ESC key safety listeners
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1025 && config.headerVariant !== 'centered') {
+      document.body.style.overflowY = '';
+    }
   });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.getAttribute('aria-expanded') === 'true') {
+      toggleMenu(false);
+      hamburgerButton.focus();
+    }
+  });
+
   hamburgerWrapper.append(hamburgerButton);
 
   // Assemble
