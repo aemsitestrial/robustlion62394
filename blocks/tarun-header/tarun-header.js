@@ -38,10 +38,17 @@ function getProp(block, name, fallback = '') {
   return fallback;
 }
 
+function normalizeVariant(value) {
+  const normalized = String(value).trim().toLowerCase().replace(/\s+/g, '-');
+  return ['standard', 'compact', 'dark', 'centered'].includes(normalized)
+    ? normalized
+    : 'standard';
+}
+
 export default function decorate(block) {
   // 1. Extract Basic Properties
   const config = {
-    headerVariant: getProp(block, 'headerVariant', 'standard').toLowerCase(),
+    headerVariant: normalizeVariant(getProp(block, 'headerVariant', 'standard')),
     tcsLogo: getProp(block, 'tcsLogo'),
     tcsLogoLink: getProp(block, 'tcsLogoLink', '/'),
     tataLogo: getProp(block, 'tataLogo'),
@@ -71,6 +78,7 @@ export default function decorate(block) {
   block.textContent = '';
   block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
   block.classList.add(`variant-${config.headerVariant}`);
+  block.dataset.variant = config.headerVariant;
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';

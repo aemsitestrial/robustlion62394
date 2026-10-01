@@ -48,43 +48,55 @@
   color: #1e1e1e;
 }
 
-.tarun-header.variant-compact nav#tarun-nav {
+.tarun-header.variant-compact nav#tarun-nav,
+.tarun-header[data-variant="compact"] nav#tarun-nav {
   height: 80px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.tarun-header.variant-compact .nav-brand-primary img {
+.tarun-header.variant-compact .nav-brand-primary img,
+.tarun-header[data-variant="compact"] .nav-brand-primary img {
   width: 112px;
   height: 28px;
 }
 
-.tarun-header.variant-dark .tarun-nav-wrapper {
+.tarun-header.variant-dark .tarun-nav-wrapper,
+.tarun-header[data-variant="dark"] .tarun-nav-wrapper {
   background-color: #1e1e1e;
   border-bottom-color: #333;
 }
 
 .tarun-header.variant-dark .nav-brand-primary a,
 .tarun-header.variant-dark .nav-brand-secondary a,
-.tarun-header.variant-dark .nav-sections a {
+.tarun-header.variant-dark .nav-sections a,
+.tarun-header[data-variant="dark"] .nav-brand-primary a,
+.tarun-header[data-variant="dark"] .nav-brand-secondary a,
+.tarun-header[data-variant="dark"] .nav-sections a {
   color: #fff;
 }
 
 .tarun-header.variant-dark .nav-hamburger-icon,
 .tarun-header.variant-dark .nav-hamburger-icon::before,
-.tarun-header.variant-dark .nav-hamburger-icon::after {
+.tarun-header.variant-dark .nav-hamburger-icon::after,
+.tarun-header[data-variant="dark"] .nav-hamburger-icon,
+.tarun-header[data-variant="dark"] .nav-hamburger-icon::before,
+.tarun-header[data-variant="dark"] .nav-hamburger-icon::after {
   background-color: #fff;
 }
 
-.tarun-header.variant-dark .nav-sections {
+.tarun-header.variant-dark .nav-sections,
+.tarun-header[data-variant="dark"] .nav-sections {
   background-color: #1e1e1e;
 }
 
-.tarun-header.variant-centered nav#tarun-nav {
+.tarun-header.variant-centered nav#tarun-nav,
+.tarun-header[data-variant="centered"] nav#tarun-nav {
   position: relative;
 }
 
-.tarun-header.variant-centered .nav-brand-primary {
+.tarun-header.variant-centered .nav-brand-primary,
+.tarun-header[data-variant="centered"] .nav-brand-primary {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -128,13 +140,15 @@
     padding: 12px 20px;
   }
 
-  .tarun-header.variant-compact nav#tarun-nav {
+  .tarun-header.variant-compact nav#tarun-nav,
+  .tarun-header[data-variant="compact"] nav#tarun-nav {
     height: 56px;
     padding-top: 8px;
     padding-bottom: 8px;
   }
 
-  .tarun-header.variant-centered .nav-brand-primary {
+  .tarun-header.variant-centered .nav-brand-primary,
+  .tarun-header[data-variant="centered"] .nav-brand-primary {
     position: static;
     transform: none;
   }
