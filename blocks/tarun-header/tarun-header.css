@@ -274,7 +274,9 @@
 .tarun-header.variant-dark .nav-brand-primary a,
 .tarun-header.variant-dark .nav-brand-secondary a,
 .tarun-header.variant-dark nav#tarun-nav .nav-sections a:any-link,
-.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections a:any-link {
+.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections a:any-link,
+.tarun-header.variant-dark nav#tarun-nav .nav-sections li,
+.tarun-header[data-variant="dark"] nav#tarun-nav .nav-sections li {
   color: #fff !important;
 }
  
