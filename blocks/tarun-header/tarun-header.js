@@ -1,12 +1,12 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
- 
+
 /**
  * Helper to safely extract property elements or child values
  */
 function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
   const fieldOrder = ['headerVariant', 'tcsLogo', 'tcsLogoLink', 'tataLogo', 'tataLogoLink', 'menu'];
- 
+
   const getValue = (element) => {
     if (!element) return '';
     const image = element.matches('img') ? element : element.querySelector('picture img, img');
@@ -15,13 +15,13 @@ function getProp(block, name, fallback = '') {
     if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
     return element.dataset.value || element.textContent.trim();
   };
- 
+
   // 1. Direct dataset or data-aue-prop lookup
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lower] !== undefined) return block.dataset[lower];
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
   if (attrElem) return getValue(attrElem);
- 
+
   // 2. Table row fallback scanning
   const rows = [...block.children];
   for (let index = 0; index < rows.length; index += 1) {
@@ -34,24 +34,24 @@ function getProp(block, name, fallback = '') {
       }
     }
   }
- 
+
   // 3. Published Universal Editor content stores model fields in row order.
   const fieldIndex = fieldOrder.indexOf(name);
   if (fieldIndex >= 0 && rows[fieldIndex]) {
     const cols = [...rows[fieldIndex].children];
     return getValue(cols.length > 1 ? cols[1] : rows[fieldIndex]) || fallback;
   }
- 
+
   return fallback;
 }
- 
+
 function normalizeVariant(value) {
   const normalized = String(value).trim().toLowerCase().replace(/\s+/g, '-');
   return ['standard', 'compact', 'dark', 'centered'].includes(normalized)
     ? normalized
     : 'standard';
 }
- 
+
 export default function decorate(block) {
   // 1. Extract Basic Properties
   const config = {
@@ -63,7 +63,7 @@ export default function decorate(block) {
   };
   const supportedVariants = ['standard', 'compact', 'dark', 'centered'];
   if (!supportedVariants.includes(config.headerVariant)) config.headerVariant = 'standard';
- 
+
   // 2. Extract Menu Content
   const menuRow = [...block.children][5];
   const menuSource = block.querySelector('[data-aue-prop="menu"]')
@@ -71,7 +71,7 @@ export default function decorate(block) {
     || block.querySelector('ul');
   let navList = document.createElement('ul');
   navList.className = 'tarun-nav-list';
- 
+
   if (menuSource) {
     const ul = menuSource.querySelector('ul') || menuSource;
     if (ul.tagName === 'UL') {
@@ -85,26 +85,26 @@ export default function decorate(block) {
       });
     }
   }
- 
+
   // 3. Rebuild Clean Block DOM
   block.textContent = '';
   block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
   block.classList.add(`variant-${config.headerVariant}`);
   block.dataset.variant = config.headerVariant;
- 
+
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';
- 
+
   const nav = document.createElement('nav');
   nav.id = 'tarun-nav';
   nav.setAttribute('aria-expanded', 'false');
- 
+
   // TCS Logo
   const brandPrimary = document.createElement('div');
   brandPrimary.className = 'nav-brand-primary';
   const primaryAnchor = document.createElement('a');
   primaryAnchor.href = config.tcsLogoLink;
- 
+
   if (config.tcsLogo) {
     primaryAnchor.append(createOptimizedPicture(
       config.tcsLogo,
@@ -116,12 +116,12 @@ export default function decorate(block) {
     primaryAnchor.textContent = 'TCS';
   }
   brandPrimary.append(primaryAnchor);
- 
+
   // Navigation Links
   const navSections = document.createElement('div');
   navSections.className = 'nav-sections';
   navSections.append(navList);
- 
+
   // Tata Logo
   const brandSecondary = document.createElement('div');
   brandSecondary.className = 'nav-brand-secondary';
@@ -129,7 +129,7 @@ export default function decorate(block) {
   secondaryAnchor.href = config.tataLogoLink;
   secondaryAnchor.target = '_blank';
   secondaryAnchor.rel = 'noopener noreferrer';
- 
+
   if (config.tataLogo) {
     secondaryAnchor.append(createOptimizedPicture(
       config.tataLogo,
@@ -141,7 +141,7 @@ export default function decorate(block) {
     secondaryAnchor.textContent = 'TATA';
   }
   brandSecondary.append(secondaryAnchor);
- 
+
   // Mobile Hamburger Toggle
   const hamburgerWrapper = document.createElement('div');
   hamburgerWrapper.className = 'nav-hamburger';
@@ -159,7 +159,7 @@ export default function decorate(block) {
     document.body.style.overflowY = !expanded || window.innerWidth >= 1025 ? '' : 'hidden';
   });
   hamburgerWrapper.append(hamburgerButton);
- 
+
   // Assemble
   nav.append(hamburgerWrapper, brandPrimary, navSections, brandSecondary);
   navWrapper.append(nav);
