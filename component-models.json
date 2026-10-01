@@ -6228,31 +6228,6 @@
     "id": "tarun-header",
     "fields": [
       {
-        "component": "select",
-        "valueType": "string",
-        "name": "headerVariant",
-        "label": "Header Variant",
-        "value": "standard",
-        "options": [
-          {
-            "name": "Standard",
-            "value": "standard"
-          },
-          {
-            "name": "Compact",
-            "value": "compact"
-          },
-          {
-            "name": "Dark",
-            "value": "dark"
-          },
-          {
-            "name": "Centered",
-            "value": "centered"
-          }
-        ]
-      },
-      {
         "component": "reference",
         "valueType": "string",
         "name": "tcsLogo",

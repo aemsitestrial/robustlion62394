@@ -1,7 +1,11 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 
 /**
- * Helper to safely extract property elements or child values
+ * Safely extracts property elements or child values
+ * @param {Element} block The block container element
+ * @param {string} name Property name
+ * @param {string} fallback Default string value
+ * @returns {string} Resolved image source URL or text string
  */
 function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
@@ -9,6 +13,7 @@ function getProp(block, name, fallback = '') {
   // 1. Direct dataset or data-aue-prop lookup
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lower] !== undefined) return block.dataset[lower];
+
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
   if (attrElem) {
     const img = attrElem.matches('img') ? attrElem : attrElem.querySelector('picture img, img');
@@ -18,44 +23,42 @@ function getProp(block, name, fallback = '') {
     return attrElem.dataset.value || attrElem.textContent.trim();
   }
 
-  // 2. Table row fallback scanning
+  // 2. Table row scanning
   const rows = [...block.children];
-  for (let index = 0; index < rows.length; index += 1) {
-    const row = rows[index];
+  const targetRow = rows.find((row) => {
     const cols = [...row.children];
     if (cols.length >= 2) {
       const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
-      if (key === lower.replace(/[-_]/g, '')) {
-        const img = cols[1].querySelector('img');
-        if (img) return img.src;
-        const anchor = cols[1].querySelector('a');
-        if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
-        return cols[1].textContent.trim();
-      }
+      return key === lower.replace(/[-_]/g, '');
     }
+    return false;
+  });
+
+  if (targetRow) {
+    const cols = [...targetRow.children];
+    const img = cols[1].querySelector('img');
+    if (img) return img.src;
+    const anchor = cols[1].querySelector('a');
+    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+    return cols[1].textContent.trim();
   }
 
   return fallback;
 }
 
-function normalizeVariant(value) {
-  const normalized = String(value).trim().toLowerCase().replace(/\s+/g, '-');
-  return ['standard', 'compact', 'dark', 'centered'].includes(normalized)
-    ? normalized
-    : 'standard';
-}
-
+/**
+ * Main decorator for the basic Tarun Header block
+ * @param {Element} block The block container element
+ */
 export default function decorate(block) {
-  // 1. Extract Basic Properties
   const config = {
-    headerVariant: normalizeVariant(getProp(block, 'headerVariant', 'standard')),
     tcsLogo: getProp(block, 'tcsLogo'),
     tcsLogoLink: getProp(block, 'tcsLogoLink', '/'),
     tataLogo: getProp(block, 'tataLogo'),
     tataLogoLink: getProp(block, 'tataLogoLink', 'https://www.tata.com'),
   };
 
-  // 2. Extract Menu Content
+  // Extract Menu Content
   const menuSource = block.querySelector('[data-aue-prop="menu"]') || block.querySelector('ul');
   let navList = document.createElement('ul');
   navList.className = 'tarun-nav-list';
@@ -65,6 +68,11 @@ export default function decorate(block) {
     if (ul.tagName === 'UL') {
       navList = ul.cloneNode(true);
       navList.className = 'tarun-nav-list';
+      navList.querySelectorAll(':scope > li').forEach((li) => {
+        if (li.querySelector('ul')) {
+          li.classList.add('has-submenu');
+        }
+      });
     } else {
       menuSource.querySelectorAll('a[href]').forEach((link) => {
         const item = document.createElement('li');
@@ -74,11 +82,8 @@ export default function decorate(block) {
     }
   }
 
-  // 3. Rebuild Clean Block DOM
+  // Clear Block Content
   block.textContent = '';
-  block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
-  block.classList.add(`variant-${config.headerVariant}`);
-  block.dataset.variant = config.headerVariant;
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';
