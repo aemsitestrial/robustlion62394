@@ -5,22 +5,18 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
  */
 function getProp(block, name, fallback = '') {
   const lower = name.toLowerCase();
-  const fieldOrder = ['headerVariant', 'tcsLogo', 'tcsLogoLink', 'tataLogo', 'tataLogoLink', 'menu'];
-
-  const getValue = (element) => {
-    if (!element) return '';
-    const image = element.matches('img') ? element : element.querySelector('picture img, img');
-    if (image) return image.getAttribute('src') || image.src;
-    const anchor = element.matches('a') ? element : element.querySelector('a');
-    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
-    return element.dataset.value || element.textContent.trim();
-  };
 
   // 1. Direct dataset or data-aue-prop lookup
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lower] !== undefined) return block.dataset[lower];
   const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lower}"]`);
-  if (attrElem) return getValue(attrElem);
+  if (attrElem) {
+    const img = attrElem.matches('img') ? attrElem : attrElem.querySelector('picture img, img');
+    if (img) return img.src;
+    const anchor = attrElem.querySelector('a');
+    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+    return attrElem.dataset.value || attrElem.textContent.trim();
+  }
 
   // 2. Table row fallback scanning
   const rows = [...block.children];
@@ -30,32 +26,22 @@ function getProp(block, name, fallback = '') {
     if (cols.length >= 2) {
       const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
       if (key === lower.replace(/[-_]/g, '')) {
-        return getValue(cols[1]);
+        const img = cols[1].querySelector('img');
+        if (img) return img.src;
+        const anchor = cols[1].querySelector('a');
+        if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+        return cols[1].textContent.trim();
       }
     }
-  }
-
-  // 3. Published Universal Editor content stores model fields in row order fallback
-  const fieldIndex = fieldOrder.indexOf(name);
-  if (fieldIndex >= 0 && rows[fieldIndex]) {
-    const cols = [...rows[fieldIndex].children];
-    return getValue(cols.length > 1 ? cols[1] : rows[fieldIndex]) || fallback;
   }
 
   return fallback;
 }
 
-function normalizeVariant(value) {
-  const normalized = String(value).trim().toLowerCase().replace(/\s+/g, '-');
-  return ['standard', 'compact', 'dark', 'centered'].includes(normalized)
-    ? normalized
-    : 'standard';
-}
-
 export default function decorate(block) {
   // 1. Extract Basic Properties
   const config = {
-    headerVariant: normalizeVariant(getProp(block, 'headerVariant', 'standard')),
+    headerVariant: getProp(block, 'headerVariant', 'standard').toLowerCase(),
     tcsLogo: getProp(block, 'tcsLogo'),
     tcsLogoLink: getProp(block, 'tcsLogoLink', '/'),
     tataLogo: getProp(block, 'tataLogo'),
@@ -63,16 +49,13 @@ export default function decorate(block) {
   };
 
   // 2. Extract Menu Content
-  const menuRow = [...block.children][5];
-  const menuSource = block.querySelector('[data-aue-prop="menu"]')
-    || (menuRow && (menuRow.children[1] || menuRow))
-    || block.querySelector('ul');
+  const menuSource = block.querySelector('[data-aue-prop="menu"]') || block.querySelector('ul');
   let navList = document.createElement('ul');
   navList.className = 'tarun-nav-list';
 
   if (menuSource) {
     const ul = menuSource.querySelector('ul') || menuSource;
-    if (ul && ul.tagName === 'UL') {
+    if (ul.tagName === 'UL') {
       navList = ul.cloneNode(true);
       navList.className = 'tarun-nav-list';
     } else {
@@ -88,7 +71,6 @@ export default function decorate(block) {
   block.textContent = '';
   block.classList.remove('variant-standard', 'variant-compact', 'variant-dark', 'variant-centered');
   block.classList.add(`variant-${config.headerVariant}`);
-  block.dataset.variant = config.headerVariant;
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'tarun-nav-wrapper';
@@ -140,7 +122,7 @@ export default function decorate(block) {
   }
   brandSecondary.append(secondaryAnchor);
 
-  // Mobile & Centered Hamburger Toggle
+  // Mobile Hamburger Toggle
   const hamburgerWrapper = document.createElement('div');
   hamburgerWrapper.className = 'nav-hamburger';
   const hamburgerButton = document.createElement('button');
@@ -149,36 +131,13 @@ export default function decorate(block) {
   hamburgerButton.setAttribute('aria-label', 'Open menu');
   hamburgerButton.setAttribute('aria-expanded', 'false');
   hamburgerButton.innerHTML = '<span class="nav-hamburger-icon"></span>';
-
-  const toggleMenu = (openState) => {
-    const isExpanded = openState !== undefined
-      ? openState
-      : nav.getAttribute('aria-expanded') !== 'true';
-
-    nav.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-    hamburgerButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
-    hamburgerButton.setAttribute('aria-label', isExpanded ? 'Close menu' : 'Open menu');
-
-    const isDesktop = window.innerWidth >= 1025;
-    document.body.style.overflowY = !isExpanded || isDesktop ? '' : 'hidden';
-  };
-
-  hamburgerButton.addEventListener('click', () => toggleMenu());
-
-  // Window resize & ESC key safety listeners
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 1025 && config.headerVariant !== 'centered') {
-      document.body.style.overflowY = '';
-    }
+  hamburgerButton.addEventListener('click', () => {
+    const expanded = nav.getAttribute('aria-expanded') === 'true';
+    nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    hamburgerButton.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    hamburgerButton.setAttribute('aria-label', expanded ? 'Open menu' : 'Close menu');
+    document.body.style.overflowY = expanded ? '' : 'hidden';
   });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && nav.getAttribute('aria-expanded') === 'true') {
-      toggleMenu(false);
-      hamburgerButton.focus();
-    }
-  });
-
   hamburgerWrapper.append(hamburgerButton);
 
   // Assemble
