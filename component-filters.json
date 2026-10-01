@@ -33,7 +33,8 @@
       "list",
       "header",
       "dummy-header",
-      "tarun-header"
+      "tarun-header",
+      "content-cards"
     ]
   },
   {
@@ -67,6 +68,12 @@
       "image",
       "button",
       "title"
+    ]
+  },
+  {
+    "id": "content-cards",
+    "components": [
+      "content-card-item"
     ]
   },
   {

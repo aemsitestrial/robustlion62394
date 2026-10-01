@@ -335,6 +335,81 @@
     ]
   },
   {
+    "id": "content-cards",
+    "fields": [
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Card Style Variant",
+        "value": "",
+        "options": [
+          {
+            "name": "Solid Blue Topic Cards",
+            "value": ""
+          },
+          {
+            "name": "Article & Report Cards",
+            "value": "article-cards"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "content-card-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "name": "category",
+        "label": "Category",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "topic",
+        "label": "Topic / Read Time",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "publishedDate",
+        "label": "Published Date",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Title",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "description",
+        "label": "Description / Summary",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "stats",
+        "label": "Stats List / Author Info",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "buttonLink",
+        "label": "CTA Link",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "dm-scene7-template",
     "fields": [
       {
