@@ -6,31 +6,49 @@ import { getAEMPublish } from '../../scripts/endpointconfig.js';
  */
 function getProp(block, name, fallback = '') {
   const lowerName = name.toLowerCase();
+  const roots = [block, ...block.querySelectorAll('.medium-list-ue-store')];
+
+  const readValue = (element) => {
+    if (!element) return '';
+    const image = element.matches('img') ? element : element.querySelector('picture img, img');
+    if (image) return image.getAttribute('src') || image.src;
+    const anchor = element.matches('a') ? element : element.querySelector('a[href]');
+    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
+    return element.dataset.value
+      || element.getAttribute('value')
+      || element.value
+      || element.textContent.trim();
+  };
 
   if (block.dataset[name] !== undefined) return block.dataset[name];
   if (block.dataset[lowerName] !== undefined) return block.dataset[lowerName];
 
-  const attrElem = block.querySelector(`[data-aue-prop="${name}"], [data-aue-prop="${lowerName}"]`);
-  if (attrElem) {
-    const anchor = attrElem.matches('a') ? attrElem : attrElem.querySelector('a');
-    if (anchor) return anchor.getAttribute('href') || anchor.textContent.trim();
-    return attrElem.dataset.value || attrElem.textContent.trim();
+  const propertyElements = roots.flatMap((root) => {
+    const descendants = [...root.querySelectorAll('[data-aue-prop]')];
+    if (root.matches('[data-aue-prop]')) descendants.unshift(root);
+    return descendants;
+  });
+  const propertyElement = propertyElements.find(
+    (element) => element.getAttribute('data-aue-prop').toLowerCase() === lowerName,
+  );
+  if (propertyElement) {
+    const value = readValue(propertyElement);
+    if (value) return value;
   }
 
-  const rows = [...block.children];
+  // Support published/serialized key-value rows in the block and UE store.
+  const rows = [...new Set(roots.flatMap((root) => [...root.querySelectorAll('div')]))];
+  const normalizedName = lowerName.replace(/[-_]/g, '');
   const targetRow = rows.find((row) => {
     const cols = [...row.children];
-    if (cols.length >= 2) {
-      const key = cols[0].textContent.trim().toLowerCase().replace(/[-_]/g, '');
-      return key === lowerName.replace(/[-_]/g, '');
-    }
-    return false;
+    const key = cols[0]?.textContent.trim().toLowerCase().replace(/[-_]/g, '');
+    return cols.length >= 2 && key === normalizedName;
   });
 
   if (targetRow) {
     const cols = [...targetRow.children];
-    const link = cols[1].querySelector('a');
-    return link ? (link.getAttribute('href') || link.textContent.trim()) : cols[1].textContent.trim();
+    const value = readValue(cols[1]);
+    if (value) return value;
   }
 
   return fallback;
