@@ -5959,6 +5959,271 @@
     ]
   },
   {
+    "id": "medium-list",
+    "fields": [
+      {
+        "component": "select",
+        "name": "listType",
+        "label": "List Type",
+        "value": "children",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Child Pages",
+            "value": "children"
+          },
+          {
+            "name": "Fixed List",
+            "value": "fixed"
+          },
+          {
+            "name": "Search",
+            "value": "search"
+          },
+          {
+            "name": "Tags",
+            "value": "tags"
+          }
+        ]
+      },
+      {
+        "component": "container",
+        "name": "childPagesOptions",
+        "label": "Child Pages Options",
+        "collapsible": false,
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "children"
+          ]
+        },
+        "fields": [
+          {
+            "component": "text",
+            "name": "parentPage",
+            "label": "Parent Page Path",
+            "description": "Folder path to list children from (e.g. /news). Defaults to current page if empty.",
+            "value": "",
+            "valueType": "string"
+          },
+          {
+            "component": "number",
+            "name": "maxItems",
+            "label": "Maximum Items",
+            "value": "5",
+            "valueType": "number"
+          },
+          {
+            "component": "select",
+            "name": "orderBy",
+            "label": "Order By",
+            "value": "title",
+            "valueType": "string",
+            "options": [
+              {
+                "name": "Title",
+                "value": "title"
+              },
+              {
+                "name": "Last Modified",
+                "value": "modified"
+              }
+            ]
+          },
+          {
+            "component": "select",
+            "name": "sortOrder",
+            "label": "Sort Order",
+            "value": "ascending",
+            "valueType": "string",
+            "options": [
+              {
+                "name": "Ascending (A-Z / Oldest)",
+                "value": "ascending"
+              },
+              {
+                "name": "Descending (Z-A / Newest)",
+                "value": "descending"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "container",
+        "name": "fixedListOptions",
+        "label": "Fixed List Options",
+        "collapsible": false,
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "fixed"
+          ]
+        },
+        "fields": [
+          {
+            "component": "richtext",
+            "name": "fixedItems",
+            "label": "Fixed Items",
+            "description": "Add a bulleted list of links with optional text directly in the editor.",
+            "value": "",
+            "valueType": "string"
+          }
+        ]
+      },
+      {
+        "component": "container",
+        "name": "searchOptions",
+        "label": "Search Options",
+        "collapsible": false,
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "search"
+          ]
+        },
+        "fields": [
+          {
+            "component": "text",
+            "name": "searchQuery",
+            "label": "Search Query",
+            "description": "Keywords to match against title or description.",
+            "value": "",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "searchIn",
+            "label": "Search In Path",
+            "description": "Optional folder path to scope the search (e.g. /news).",
+            "value": "",
+            "valueType": "string"
+          },
+          {
+            "component": "number",
+            "name": "maxItemsSearch",
+            "label": "Maximum Items",
+            "value": "5",
+            "valueType": "number"
+          }
+        ]
+      },
+      {
+        "component": "container",
+        "name": "tagsOptions",
+        "label": "Tags Options",
+        "collapsible": false,
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        },
+        "fields": [
+          {
+            "component": "text",
+            "name": "tags",
+            "label": "Tags (Comma-separated)",
+            "description": "e.g. cloud, platform, security",
+            "value": "",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "tagsParentPage",
+            "label": "Parent Page Path",
+            "description": "Optional path to scope tagged pages.",
+            "value": "",
+            "valueType": "string"
+          },
+          {
+            "component": "select",
+            "name": "tagMatch",
+            "label": "Match Mode",
+            "value": "any",
+            "valueType": "string",
+            "options": [
+              {
+                "name": "Any Tag (Match ≥1)",
+                "value": "any"
+              },
+              {
+                "name": "All Tags (Match All)",
+                "value": "all"
+              }
+            ]
+          },
+          {
+            "component": "number",
+            "name": "maxItemsTags",
+            "label": "Maximum Items",
+            "value": "5",
+            "valueType": "number"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "displayAsTeaser",
+        "label": "Display as Teaser",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showDescription",
+        "label": "Show Description",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showDate",
+        "label": "Show Modification Date",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "modal",
     "fields": [
       {
