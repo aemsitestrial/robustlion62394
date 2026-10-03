@@ -6,6 +6,7 @@ import { getAEMPublish } from '../../scripts/endpointconfig.js';
  */
 function getProp(block, name, fallback = '') {
   const lowerName = name.toLowerCase();
+  const normalizedName = lowerName.replace(/[-_\s]/g, '');
   const roots = [block, ...block.querySelectorAll('.medium-list-ue-store')];
 
   const readValue = (element) => {
@@ -38,11 +39,16 @@ function getProp(block, name, fallback = '') {
 
   // Support published/serialized key-value rows in the block and UE store.
   const rows = [...new Set(roots.flatMap((root) => [...root.querySelectorAll('div')]))];
-  const normalizedName = lowerName.replace(/[-_]/g, '');
+  const aliases = {
+    parentpage: ['parentpagepath'],
+    searchin: ['searchinpath'],
+    tagsparentpage: ['parentpagepath', 'tagparentpagepath'],
+  };
+  const acceptableNames = [normalizedName, ...(aliases[normalizedName] || [])];
   const targetRow = rows.find((row) => {
     const cols = [...row.children];
-    const key = cols[0]?.textContent.trim().toLowerCase().replace(/[-_]/g, '');
-    return cols.length >= 2 && key === normalizedName;
+    const key = cols[0]?.textContent.trim().toLowerCase().replace(/[-_\s]/g, '');
+    return cols.length >= 2 && acceptableNames.includes(key);
   });
 
   if (targetRow) {
