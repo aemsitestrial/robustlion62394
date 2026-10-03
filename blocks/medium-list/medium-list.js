@@ -61,7 +61,14 @@ function getBoolean(block, name, fallback = false) {
 
 function normalizePath(path) {
   if (!path) return '/';
-  const clean = path.split('?')[0].replace(/\/+$/, '') || '/';
+  let pathname;
+  try {
+    pathname = new URL(String(path).trim(), window.location.origin).pathname;
+  } catch (error) {
+    [pathname] = String(path).split(/[?#]/);
+  }
+
+  const clean = pathname.replace(/\/+$/, '') || '/';
   if (clean === '/index') return '/';
   if (clean.startsWith('/index/')) return clean.replace(/^\/index/, '');
   return clean;
@@ -111,8 +118,7 @@ function filterAndSortItems(items, config) {
       const relativePath = parent === '/'
         ? itemPath.replace(/^\/+/, '')
         : itemPath.slice(parent.length + 1);
-      const depth = relativePath.split('/').filter(Boolean).length;
-      return depth === 1;
+      return relativePath.split('/').filter(Boolean).length === 1;
     });
   } else if (config.listType === 'search') {
     const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
