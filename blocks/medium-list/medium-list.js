@@ -8,6 +8,24 @@ function getProp(block, name, fallback = '') {
   const lowerName = name.toLowerCase();
   const normalizedName = lowerName.replace(/[-_\s]/g, '');
   const roots = [block, ...block.querySelectorAll('.medium-list-ue-store')];
+  const fieldOrder = [
+    'listType',
+    'parentPage',
+    'maxItems',
+    'orderBy',
+    'sortOrder',
+    'fixedItems',
+    'searchQuery',
+    'searchIn',
+    'maxItemsSearch',
+    'tags',
+    'tagsParentPage',
+    'tagMatch',
+    'maxItemsTags',
+    'displayAsTeaser',
+    'showDescription',
+    'showDate',
+  ];
 
   const readValue = (element) => {
     if (!element) return '';
@@ -37,8 +55,9 @@ function getProp(block, name, fallback = '') {
     if (value) return value;
   }
 
-  // Support published/serialized key-value rows in the block and UE store.
-  const rows = [...new Set(roots.flatMap((root) => [...root.querySelectorAll('div')]))];
+  // Support labeled key-value rows in authored markup and the hidden UE store.
+  const rows = roots.flatMap((root) => [...root.children])
+    .filter((row) => !row.classList.contains('medium-list-container'));
   const aliases = {
     parentpage: ['parentpagepath'],
     searchin: ['searchinpath'],
@@ -55,6 +74,22 @@ function getProp(block, name, fallback = '') {
     const cols = [...targetRow.children];
     const value = readValue(cols[1]);
     if (value) return value;
+  }
+
+  // Universal Editor may serialize model values as unlabeled rows, in schema order.
+  const fieldIndex = fieldOrder.indexOf(name);
+  if (fieldIndex >= 0) {
+    const stores = [...block.querySelectorAll('.medium-list-ue-store')];
+    const storedRows = stores.length
+      ? stores.flatMap((store) => [...store.children])
+      : [...block.children].filter((child) => !child.matches('ul.medium-list-container'));
+    const row = storedRows[fieldIndex];
+    if (row) {
+      const cells = [...row.children];
+      const valueCell = cells.length > 1 ? cells[1] : cells[0] || row;
+      const value = readValue(valueCell);
+      if (value) return value;
+    }
   }
 
   return fallback;
