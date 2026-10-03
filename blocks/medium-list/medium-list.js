@@ -106,7 +106,13 @@ function filterAndSortItems(items, config) {
     result = result.filter((item) => {
       const itemPath = normalizePath(item.path);
       if (itemPath === parent) return false;
-      return parent === '/' ? itemPath.startsWith('/') : itemPath.startsWith(`${parent}/`);
+      if (parent !== '/' && !itemPath.startsWith(`${parent}/`)) return false;
+
+      const relativePath = parent === '/'
+        ? itemPath.replace(/^\/+/, '')
+        : itemPath.slice(parent.length + 1);
+      const depth = relativePath.split('/').filter(Boolean).length;
+      return depth === 1;
     });
   } else if (config.listType === 'search') {
     const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
@@ -179,10 +185,23 @@ function renderItem(item, config) {
   if (config.showDate && item.lastModified) {
     const date = document.createElement('time');
     date.className = 'medium-list-date';
-    const parsed = new Date(Number(item.lastModified) * 1000 || item.lastModified);
-    date.textContent = !Number.isNaN(parsed.valueOf())
-      ? parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-      : item.lastModified;
+    const rawDate = item.lastModified;
+    const numericTimestamp = typeof rawDate === 'number'
+      || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
+    const timestamp = numericTimestamp
+      ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
+      : rawDate;
+    const parsed = new Date(timestamp);
+    if (!Number.isNaN(parsed.valueOf())) {
+      date.dateTime = parsed.toISOString();
+      date.textContent = parsed.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } else {
+      date.textContent = String(rawDate);
+    }
     body.append(date);
   }
 
