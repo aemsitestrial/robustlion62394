@@ -110,13 +110,13 @@
           "condition": { "==": [{ "var": "listType" }, "search"] }
         },
         {
-          "component": "text",
-          "name": "tags",
-          "label": "Tags (Comma-separated)",
-          "description": "e.g. cloud, platform, security",
-          "value": "",
-          "valueType": "string",
-          "condition": { "==": [{ "var": "listType" }, "tags"] }
+            "component": "aem-tags",
+            "name": "tags",
+            "label": "Tags",
+            "description": "Select tags from the AEM Taxonomy.",
+            "value": [],
+            "valueType": "string[]",
+            "condition": { "==": [{ "var": "listType" }, "tags"] }
         },
         {
           "component": "text",

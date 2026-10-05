@@ -6131,12 +6131,12 @@
         }
       },
       {
-        "component": "text",
+        "component": "aem-tags",
         "name": "tags",
-        "label": "Tags (Comma-separated)",
-        "description": "e.g. cloud, platform, security",
-        "value": "",
-        "valueType": "string",
+        "label": "Tags",
+        "description": "Select tags from the AEM Taxonomy.",
+        "value": [],
+        "valueType": "string[]",
         "condition": {
           "==": [
             {
