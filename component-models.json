@@ -172,6 +172,532 @@
     ]
   },
   {
+    "id": "advanced-list",
+    "fields": [
+      {
+        "component": "select",
+        "name": "listType",
+        "label": "List Type",
+        "value": "children",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Children Pages",
+            "value": "children"
+          },
+          {
+            "name": "Fixed List",
+            "value": "fixed"
+          },
+          {
+            "name": "Tags",
+            "value": "tags"
+          },
+          {
+            "name": "Manual",
+            "value": "manual"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "personalization",
+        "label": "Personalization",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "OFF",
+            "value": "false"
+          },
+          {
+            "name": "ON",
+            "value": "true"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "parentPage",
+        "label": "Parent Page Path",
+        "description": "Folder path to list children from (e.g. /blocks).",
+        "value": "",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "children"
+          ]
+        }
+      },
+      {
+        "component": "number",
+        "name": "childDepth",
+        "label": "Child Depth",
+        "description": "Directory depth (e.g. 1 for direct children, 2 for grandchildren).",
+        "value": "1",
+        "valueType": "number",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "children"
+          ]
+        }
+      },
+      {
+        "component": "richtext",
+        "name": "fixedItems",
+        "label": "Fixed List Items",
+        "description": "Bulleted list of links for fixed items.",
+        "value": "",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "fixed"
+          ]
+        }
+      },
+      {
+        "component": "text",
+        "name": "tagsParentPage",
+        "label": "Parent Page Path",
+        "value": "",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        }
+      },
+      {
+        "component": "number",
+        "name": "tagsChildDepth",
+        "label": "Child Depth",
+        "value": "1",
+        "valueType": "number",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        }
+      },
+      {
+        "component": "aem-tags",
+        "name": "tags",
+        "label": "Tags",
+        "value": [],
+        "valueType": "string[]",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        }
+      },
+      {
+        "component": "select",
+        "name": "tagMatch",
+        "label": "Tags Match",
+        "value": "any",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        },
+        "options": [
+          {
+            "name": "Any Tag",
+            "value": "any"
+          },
+          {
+            "name": "All Tags",
+            "value": "all"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "tagResultType",
+        "label": "Tag result Type",
+        "value": "all",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        },
+        "options": [
+          {
+            "name": "All results (Default)",
+            "value": "all"
+          },
+          {
+            "name": "1 result each tag",
+            "value": "1-each"
+          }
+        ]
+      },
+      {
+        "component": "richtext",
+        "name": "manualFragments",
+        "label": "Manual Content Fragments",
+        "description": "Add Content Fragment paths as bulleted links.",
+        "value": "",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "manual"
+          ]
+        }
+      },
+      {
+        "component": "select",
+        "name": "orderBy",
+        "label": "Order By",
+        "value": "title",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Title",
+            "value": "title"
+          },
+          {
+            "name": "Last Modified",
+            "value": "modified"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "sortOrder",
+        "label": "Sort Order",
+        "value": "ascending",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Ascending",
+            "value": "ascending"
+          },
+          {
+            "name": "Descending",
+            "value": "descending"
+          }
+        ]
+      },
+      {
+        "component": "number",
+        "name": "maxItems",
+        "label": "Maximum Items",
+        "value": "4",
+        "valueType": "number"
+      },
+      {
+        "component": "select",
+        "name": "linkItems",
+        "label": "Link Items",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "cardColor",
+        "label": "Card Color",
+        "value": "grey",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Blue",
+            "value": "blue"
+          },
+          {
+            "name": "Grey",
+            "value": "grey"
+          },
+          {
+            "name": "Black",
+            "value": "black"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Section Title",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "description",
+        "label": "Section Description",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "viewAllText",
+        "label": "View All Text",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "viewAllLink",
+        "label": "View All Link",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "listStyle",
+        "label": "List Style",
+        "value": "card-m-scroll",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "Card (M Scroll)",
+            "value": "card-m-scroll"
+          },
+          {
+            "name": "Hero Card",
+            "value": "hero-card"
+          },
+          {
+            "name": "Table List 1",
+            "value": "table-list-1"
+          },
+          {
+            "name": "Table List 2",
+            "value": "table-list-2"
+          },
+          {
+            "name": "Card Image Top",
+            "value": "card-image-top"
+          },
+          {
+            "name": "Card - 2Col (TM Scroll)",
+            "value": "card-2col-scroll"
+          },
+          {
+            "name": "Card - 4Col (DTM Scroll)",
+            "value": "card-4col-scroll"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "reportCtaTitle",
+        "label": "Report CTA Title",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "showEyebrow",
+        "label": "Show Eyebrow",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "hideTitle",
+        "label": "Hide Title",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showDescription",
+        "label": "Show Description",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "hideImage",
+        "label": "Hide Image",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showDate",
+        "label": "Show Date",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "dateFormat",
+        "label": "Date Format",
+        "value": "DD-MM-YYYY",
+        "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "showDate"
+            },
+            "true"
+          ]
+        },
+        "options": [
+          {
+            "name": "DD-MM-YYYY",
+            "value": "DD-MM-YYYY"
+          },
+          {
+            "name": "MM-DD-YYYY",
+            "value": "MM-DD-YYYY"
+          },
+          {
+            "name": "MMM d, yyyy",
+            "value": "MMM d, yyyy"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "displayTags",
+        "label": "Display Tags",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "authorDetails",
+        "label": "Author Details",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showIcon",
+        "label": "Show Icon",
+        "value": "false",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "ai-search",
     "fields": [
       {

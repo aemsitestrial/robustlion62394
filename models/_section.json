@@ -70,7 +70,8 @@
         "dummy-header",
         "tarun-header",
         "content-cards",
-        "medium-list"
+        "medium-list",
+        "advanced-list"
       ]
     }
   ]
