@@ -34,14 +34,18 @@
           ]
         },
         {
-          "component": "select",
+          "component": "container",
           "name": "personalization",
-          "label": "Personalization",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "OFF", "value": "false" },
-            { "name": "ON", "value": "true" }
+          "label": "Adobe Target Personalization",
+          "collapsible": true,
+          "fields": [
+            {
+              "component": "boolean",
+              "name": "personalizationEnabled",
+              "label": "Enable Personalization",
+              "value": false,
+              "valueType": "boolean"
+            }
           ]
         },
         {
@@ -233,104 +237,80 @@
           "valueType": "string"
         },
         {
-          "component": "select",
-          "name": "showEyebrow",
-          "label": "Show Eyebrow",
-          "value": "true",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "hideTitle",
-          "label": "Hide Title",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "showDescription",
-          "label": "Show Description",
-          "value": "true",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "hideImage",
-          "label": "Hide Image",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "showDate",
-          "label": "Show Date",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "dateFormat",
-          "label": "Date Format",
-          "value": "DD-MM-YYYY",
-          "valueType": "string",
-          "condition": { "==": [{ "var": "showDate" }, "true"] },
-          "options": [
-            { "name": "DD-MM-YYYY", "value": "DD-MM-YYYY" },
-            { "name": "MM-DD-YYYY", "value": "MM-DD-YYYY" },
-            { "name": "MMM d, yyyy", "value": "MMM d, yyyy" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "displayTags",
-          "label": "Display Tags",
-          "value": "true",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "authorDetails",
-          "label": "Author Details",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
-          ]
-        },
-        {
-          "component": "select",
-          "name": "showIcon",
-          "label": "Show Icon",
-          "value": "false",
-          "valueType": "string",
-          "options": [
-            { "name": "Yes", "value": "true" },
-            { "name": "No", "value": "false" }
+          "component": "container",
+          "name": "showHideContainer",
+          "label": "Show / Hide",
+          "collapsible": true,
+          "fields": [
+            {
+              "component": "boolean",
+              "name": "showEyebrow",
+              "label": "Show Eyebrow",
+              "value": true,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "hideTitle",
+              "label": "Hide Title",
+              "value": false,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "showDescription",
+              "label": "Show Description",
+              "value": true,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "hideImage",
+              "label": "Hide Image",
+              "value": false,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "showDate",
+              "label": "Show Date",
+              "value": false,
+              "valueType": "boolean"
+            },
+            {
+              "component": "select",
+              "name": "dateFormat",
+              "label": "Date Format",
+              "value": "DD-MM-YYYY",
+              "valueType": "string",
+              "condition": { "==": [{ "var": "showDate" }, true] },
+              "options": [
+                { "name": "DD-MM-YYYY", "value": "DD-MM-YYYY" },
+                { "name": "MM-DD-YYYY", "value": "MM-DD-YYYY" },
+                { "name": "MMM d, yyyy", "value": "MMM d, yyyy" }
+              ]
+            },
+            {
+              "component": "boolean",
+              "name": "displayTags",
+              "label": "Display Tags",
+              "value": true,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "authorDetails",
+              "label": "Author Details",
+              "value": false,
+              "valueType": "boolean"
+            },
+            {
+              "component": "boolean",
+              "name": "showIcon",
+              "label": "Show Icon",
+              "value": false,
+              "valueType": "boolean"
+            }
           ]
         }
       ]
