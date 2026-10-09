@@ -134,7 +134,28 @@ async function fetchQueryIndex() {
   }
 }
 
+/**
+ * Enhanced Fixed Items parser supporting Universal Editor Multifields + legacy Rich Text lists
+ */
 function parseFixedItems(block) {
+  const store = block.querySelector('.medium-list-ue-store') || block;
+  const itemRows = [...store.querySelectorAll('[data-aue-model="fixed-item"], .fixed-item')];
+
+  if (itemRows.length > 0) {
+    return itemRows.map((row) => {
+      const path = getProp(row, 'fixedItemPath') || getProp(row, 'path');
+      const title = getProp(row, 'fixedItemTitle') || getProp(row, 'title');
+      const target = getProp(row, 'fixedItemTarget', '_self');
+
+      return {
+        path,
+        title: title || path,
+        target,
+      };
+    }).filter((item) => item.path);
+  }
+
+  // Fallback: Parse legacy bulleted <a> links
   const source = block.querySelector('[data-aue-prop="fixedItems"]') || block.querySelector('ul');
   if (!source) return [];
 
@@ -142,6 +163,7 @@ function parseFixedItems(block) {
   return links.map((a) => ({
     path: a.getAttribute('href'),
     title: a.textContent.trim() || a.getAttribute('href'),
+    target: a.getAttribute('target') || '_self',
     description: a.dataset.description || '',
     image: a.querySelector('img')?.src || '',
   }));
@@ -164,7 +186,6 @@ function filterAndSortItems(items, config) {
         : itemPath.slice(parent.length + 1);
 
       const depth = relativePath.split('/').filter(Boolean).length;
-      // Inclusive Depth Check (1 <= depth <= targetDepth)
       return depth >= 1 && depth <= targetDepth;
     });
   } else if (config.listType === 'search') {
@@ -225,6 +246,12 @@ function renderItem(item, config) {
   const link = document.createElement('a');
   link.href = normalizePath(item.path);
   link.textContent = item.title || item.name || 'Untitled';
+
+  if (item.target === '_blank') {
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  }
+
   title.append(link);
   body.append(title);
 

@@ -6516,12 +6516,14 @@
         }
       },
       {
-        "component": "richtext",
+        "component": "multifield",
         "name": "fixedItems",
-        "label": "Fixed Items",
-        "description": "Add a bulleted list of links with optional text directly in the editor.",
-        "value": "",
-        "valueType": "string",
+        "label": "Fixed List Items",
+        "description": "Add items with custom path, title, and target window settings.",
+        "value": [],
+        "valueType": "object[]",
+        "composite": true,
+        "model": "fixed-item",
         "condition": {
           "==": [
             {
@@ -6698,6 +6700,44 @@
           {
             "name": "No",
             "value": "false"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fixed-item",
+    "fields": [
+      {
+        "component": "text",
+        "name": "fixedItemPath",
+        "label": "Fixed Item Path",
+        "description": "Page or media URL path (e.g. /news/article-1).",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "fixedItemTitle",
+        "label": "Fixed Item Title",
+        "description": "Custom link label text.",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "fixedItemTarget",
+        "label": "Fixed Item Target",
+        "value": "_self",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Default",
+            "value": "_self"
+          },
+          {
+            "name": "Open in New Window",
+            "value": "_blank"
           }
         ]
       }
