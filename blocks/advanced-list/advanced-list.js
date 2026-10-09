@@ -2,8 +2,8 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 import { getAEMPublish } from '../../scripts/endpointconfig.js';
 
 /**
- * Multi-tier property extractor safely reading authored values across UE data attributes,
- * hidden stores, and serialized rows without breaking instrumentation.
+ * Robust property extractor reading values across UE dataset attributes,
+ * store nodes, and key-value rows without breaking live instrumentation.
  */
 function getProp(block, name, fallback = '') {
   const lowerName = name.toLowerCase();
@@ -30,6 +30,7 @@ function getProp(block, name, fallback = '') {
     if (root.matches('[data-aue-prop]')) descendants.unshift(root);
     return descendants;
   });
+
   const propertyElement = propertyElements.find(
     (element) => element.getAttribute('data-aue-prop').toLowerCase() === lowerName,
   );
@@ -38,7 +39,7 @@ function getProp(block, name, fallback = '') {
     if (value) return value;
   }
 
-  // Key-value row support
+  // Key-Value row lookup
   const rows = roots.flatMap((root) => [...root.children])
     .filter((row) => !row.classList.contains('advanced-list-container'));
   const targetRow = rows.find((row) => {
@@ -107,7 +108,7 @@ function parseFixedOrManualItems(source) {
 }
 
 /**
- * Filter & Sort pipeline supporting Child Depth & "1 card each" Tag Deduplication
+ * Filter & Sort Pipeline handling Depth, Tags Scoping, and Priority Tag Deduplication
  */
 function filterAndSortItems(items, config) {
   let result = items.filter((item) => item.path);
@@ -128,15 +129,15 @@ function filterAndSortItems(items, config) {
       return depth === targetDepth;
     });
   } else if (config.listType === 'tags') {
-    const tags = (config.tags || '').split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+    const rawTags = Array.isArray(config.tags) ? config.tags.join(',') : String(config.tags || '');
+    const authoredTags = rawTags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
     const scopePath = config.tagsParentPage ? normalizePath(config.tagsParentPage) : null;
     const targetDepth = Number(config.tagsChildDepth) || 1;
 
-    if (!tags.length) return [];
-
-    result = result.filter((item) => {
+    // Filter scoped items matching tags
+    const candidateItems = result.filter((item) => {
       const itemPath = normalizePath(item.path);
-      if (scopePath && scopePath !== '/' && !itemPath.startsWith(`${scopePath}/`)) return false;
+      if (scopePath && !itemPath.startsWith(`${scopePath}/`)) return false;
 
       if (scopePath) {
         const relativePath = scopePath === '/'
@@ -146,37 +147,35 @@ function filterAndSortItems(items, config) {
         if (depth !== targetDepth) return false;
       }
 
-      const itemTags = String(item.tags || '')
-        .toLowerCase()
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean);
+      const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
       return config.tagMatch === 'all'
-        ? tags.every((tag) => itemTags.includes(tag))
-        : tags.some((tag) => itemTags.includes(tag));
+        ? authoredTags.every((t) => itemTags.some((it) => it.includes(t)))
+        : authoredTags.some((t) => itemTags.some((it) => it.includes(t)));
     });
 
-    // Tag result type: 1 card each tag
-    if (config.tagResultType === '1-each' && tags.length > 0) {
+    // Tag result type: "1 result each tag" deduplication
+    if (config.tagResultType === '1-each' && authoredTags.length > 0) {
       const uniqueByTag = [];
-      const seenPaths = new Set();
+      const usedPaths = new Set();
 
-      tags.forEach((tag) => {
-        const match = result.find((item) => {
-          const itemTags = String(item.tags || '')
-            .toLowerCase()
-            .split(',')
-            .map((itemTag) => itemTag.trim())
-            .filter(Boolean);
-          const path = normalizePath(item.path);
-          return itemTags.includes(tag) && !seenPaths.has(path);
+      authoredTags.forEach((tag) => {
+        const matchingItem = candidateItems.find((item) => {
+          if (usedPaths.has(item.path)) return false;
+          const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
+          return itemTags.some((it) => it.includes(tag));
         });
-        if (match) {
-          seenPaths.add(normalizePath(match.path));
-          uniqueByTag.push({ ...match, primaryTag: tag });
+
+        if (matchingItem) {
+          usedPaths.add(matchingItem.path);
+          uniqueByTag.push({
+            ...matchingItem,
+            primaryTag: tag, // Overline display name
+          });
         }
       });
       result = uniqueByTag;
+    } else {
+      result = candidateItems;
     }
   }
 
@@ -188,15 +187,11 @@ function filterAndSortItems(items, config) {
     return config.sortOrder === 'descending' ? -cmp : cmp;
   });
 
-  // Cap
   return config.maxItems > 0 ? result.slice(0, config.maxItems) : result;
 }
 
-/**
- * Structural hook for personalization targeting (To be expanded in future phase)
- */
 function applyPersonalizationHook(items, config) {
-  if (!config.personalization) return items;
+  if (!config.personalizationEnabled) return items;
   // Personalization logic hook placeholder
   return items;
 }
@@ -215,7 +210,7 @@ function formatDate(rawDate, format) {
 
   if (format === 'MM-DD-YYYY') return `${monthNum}-${day}-${year}`;
   if (format === 'MMM d, yyyy') return `${monthShort} ${parsed.getDate()}, ${year}`;
-  return `${day}-${monthNum}-${year}`; // Default DD-MM-YYYY
+  return `${day}-${monthNum}-${year}`;
 }
 
 function renderItem(item, config, index) {
@@ -228,7 +223,7 @@ function renderItem(item, config, index) {
   const card = document.createElement('div');
   card.className = 'advanced-list-card';
 
-  // 1. Image Media
+  // 1. Media
   if (!config.hideImage && item.image) {
     const picContainer = document.createElement('div');
     picContainer.className = 'advanced-list-media';
@@ -239,13 +234,13 @@ function renderItem(item, config, index) {
   const body = document.createElement('div');
   body.className = 'advanced-list-body';
 
-  // 2. Overline / Eyebrow Tag
-  if (config.displayTags && config.showEyebrow) {
+  // 2. Overline Tag
+  if (config.showEyebrow && config.displayTags) {
     const eyebrowText = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
     if (eyebrowText) {
       const overline = document.createElement('span');
       overline.className = 'advanced-list-overline';
-      overline.textContent = eyebrowText.toUpperCase();
+      overline.textContent = eyebrowText.replace(/^.*:/, '').toUpperCase();
       body.append(overline);
     }
   }
@@ -258,10 +253,6 @@ function renderItem(item, config, index) {
       const link = document.createElement('a');
       link.href = normalizePath(item.path);
       link.textContent = item.title || item.name || 'Untitled';
-      if (config.showIcon) {
-        link.classList.add('advanced-list-link-icon');
-        link.setAttribute('aria-label', `${link.textContent} (opens page)`);
-      }
       title.append(link);
     } else {
       title.textContent = item.title || item.name || 'Untitled';
@@ -277,7 +268,7 @@ function renderItem(item, config, index) {
     body.append(desc);
   }
 
-  // 5. Metadata Footer (Date, Author, Tags)
+  // 5. Meta Footer
   const meta = document.createElement('div');
   meta.className = 'advanced-list-meta';
 
@@ -307,7 +298,7 @@ export default async function decorate(block) {
 
   const config = {
     listType,
-    personalization: getBoolean(block, 'personalization', false),
+    personalizationEnabled: getBoolean(block, 'personalizationEnabled', false),
     parentPage: getProp(block, 'parentPage'),
     childDepth: getProp(block, 'childDepth', '1'),
     tagsParentPage: getProp(block, 'tagsParentPage'),
@@ -334,15 +325,14 @@ export default async function decorate(block) {
     displayTags: getBoolean(block, 'displayTags', true),
     authorDetails: getBoolean(block, 'authorDetails', false),
     showIcon: getBoolean(block, 'showIcon', false),
+    reportCtaTitle: getProp(block, 'reportCtaTitle'),
   };
 
-  // Set outer layout modifier class
-  const oldStyleClasses = [...block.classList]
-    .filter((className) => className.startsWith('list-style-'));
-  block.classList.remove(...oldStyleClasses);
+  // Reset and set layout class
+  block.className = block.className.replace(/\blist-style-\S+/g, '').trim();
   block.classList.add(`list-style-${config.listStyle}`);
 
-  // 1. UE Instrumentation Store
+  // UE Store Handling
   let ueStore = block.querySelector('.advanced-list-ue-store');
   if (!ueStore) {
     ueStore = document.createElement('div');
@@ -353,10 +343,10 @@ export default async function decorate(block) {
     }
   }
 
-  // Clean stale containers on live update
+  // Clear live elements on re-render
   [...block.querySelectorAll('.advanced-list-header, .advanced-list-container')].forEach((el) => el.remove());
 
-  // 2. Render Header Lockup
+  // Render Header Lockup
   if (config.title || config.description || (config.viewAllText && config.viewAllLink)) {
     const header = document.createElement('div');
     header.className = 'advanced-list-header';
@@ -368,27 +358,19 @@ export default async function decorate(block) {
       header.append(h2);
     }
 
-    if (config.description) {
-      const description = document.createElement('p');
-      description.className = 'advanced-list-subheading';
-      description.textContent = config.description;
-      header.append(description);
-    }
-
     if (config.viewAllText && config.viewAllLink) {
       const cta = document.createElement('a');
       cta.className = 'advanced-list-cta button';
       cta.href = normalizePath(config.viewAllLink);
       cta.textContent = config.viewAllText;
-      if (config.reportCtaTitle) cta.title = config.reportCtaTitle;
-      if (config.showIcon) cta.classList.add('advanced-list-cta-icon');
+      if (config.reportCtaTitle) cta.setAttribute('title', config.reportCtaTitle);
       header.append(cta);
     }
 
     block.append(header);
   }
 
-  // 3. Resolve Items
+  // Fetch Items
   let items = [];
   if (config.listType === 'fixed' || config.listType === 'manual') {
     items = parseFixedOrManualItems(ueStore);
@@ -399,14 +381,14 @@ export default async function decorate(block) {
 
   items = applyPersonalizationHook(items, config);
 
-  // 4. Render Grid / Cards
+  // Render Grid
   const ul = document.createElement('ul');
   ul.className = 'advanced-list-container';
 
   if (!items.length) {
     const emptyLi = document.createElement('li');
     emptyLi.className = 'advanced-list-empty';
-    emptyLi.textContent = 'No matching results found.';
+    emptyLi.textContent = 'No matching pages found.';
     ul.append(emptyLi);
   } else {
     items.forEach((item, index) => ul.append(renderItem(item, config, index)));

@@ -266,6 +266,7 @@
         "component": "text",
         "name": "tagsParentPage",
         "label": "Parent Page Path",
+        "description": "Optional folder path to scope tagged pages.",
         "value": "",
         "valueType": "string",
         "condition": {
@@ -281,6 +282,7 @@
         "component": "number",
         "name": "tagsChildDepth",
         "label": "Child Depth",
+        "description": "Directory depth relative to parent path.",
         "value": "1",
         "valueType": "number",
         "condition": {
@@ -296,6 +298,7 @@
         "component": "aem-tags",
         "name": "tags",
         "label": "Tags",
+        "description": "Select tags from the AEM Taxonomy.",
         "value": [],
         "valueType": "string[]",
         "condition": {

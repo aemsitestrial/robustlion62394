@@ -1,47 +1,42 @@
-/* Advanced List block layout and card presentation. */
+/* ==========================================================================
+   ADVANCED LIST BLOCK STYLING
+   ========================================================================== */
+
 .advanced-list-wrapper {
-  box-sizing: border-box;
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
   padding: 4rem 2rem;
+  box-sizing: border-box;
 }
 
+/* Header Lockup */
 .advanced-list .advanced-list-header {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem 1.5rem;
+  align-items: center;
   margin-bottom: 2.5rem;
+  gap: 1.5rem;
 }
 
 .advanced-list .advanced-list-heading {
   margin: 0;
-  color: #0c0c0d;
-  font-family: Inter, sans-serif;
-  font-size: 2.5rem;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  font-size: 2.5rem;
   line-height: 1.2;
-}
-
-.advanced-list .advanced-list-subheading {
-  flex-basis: 100%;
-  margin: 0;
-  color: #555;
-  font-size: 1rem;
-  line-height: 1.5;
+  letter-spacing: -0.03em;
+  color: #0c0c0d;
 }
 
 .advanced-list .advanced-list-cta {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
   padding: 0.75rem 1.5rem;
   border-radius: 2rem;
   background-color: #000;
   color: #fff;
-  font-family: Inter, sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
@@ -50,178 +45,33 @@
   opacity: 0.85;
 }
 
-.advanced-list .advanced-list-cta-icon::after,
-.advanced-list .advanced-list-link-icon::after {
-  display: inline-block;
-  margin-left: 0.5rem;
-  content: '→';
-}
-
+/* Base Grid */
 .advanced-list .advanced-list-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
+  display: grid;
+  gap: 1.5rem;
 }
 
-.advanced-list .advanced-list-item {
-  display: flex;
-  box-sizing: border-box;
-  height: 453px;
-  overflow: hidden;
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+/* ==========================================================================
+   LAYOUT VARIATIONS
+   ========================================================================== */
 
-.advanced-list .advanced-list-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgb(0 0 0 / 12%);
-}
-
-.advanced-list .advanced-list-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-  width: 100%;
-  padding: 1.5rem;
-}
-
-.advanced-list .advanced-list-media {
-  width: 100%;
-  height: 200px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.advanced-list .advanced-list-media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.advanced-list .advanced-list-body {
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.625rem;
-}
-
-.advanced-list .advanced-list-overline {
-  font-family: Inter, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  opacity: 0.85;
-}
-
-.advanced-list .advanced-list-card-title {
-  margin: 0;
-  font-family: Inter, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
-}
-
-.advanced-list .advanced-list-card-title a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.advanced-list .advanced-list-card-title a:hover,
-.advanced-list .advanced-list-card-title a:focus-visible {
-  text-decoration: underline;
-}
-
-.advanced-list .advanced-list-description {
-  display: -webkit-box;
-  overflow: hidden;
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  opacity: 0.8;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-
-.advanced-list .advanced-list-meta {
-  display: flex;
-  gap: 1rem;
-  margin-top: auto;
-  padding-top: 0.5rem;
-  font-size: 0.75rem;
-  opacity: 0.75;
-}
-
-.advanced-list .advanced-list-empty {
-  grid-column: 1 / -1;
-  padding: 3rem;
-  border: 1px dashed #ccc;
-  border-radius: 12px;
-  background-color: #f9f9f9;
-  color: #777;
-  text-align: center;
-}
-
-.advanced-list .advanced-list-item.card-color-grey {
-  background-color: #f3f3f3;
-  color: #0c0c0d;
-}
-
-.advanced-list .advanced-list-item.card-color-black {
-  background-color: #20293c;
-  color: #fff;
-}
-
-.advanced-list .advanced-list-item.card-color-blue {
-  background-color: #4673db;
-  color: #fff;
-}
-
-/* Card M Scroll and 4-column layouts. */
+/* 4 Column Grid & M Scroll */
 .advanced-list.list-style-card-m-scroll .advanced-list-container,
 .advanced-list.list-style-card-4col-scroll .advanced-list-container {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, 1fr);
 }
 
-/* Two-column card layout. */
+/* 2 Column Grid */
 .advanced-list.list-style-card-2col-scroll .advanced-list-container {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, 1fr);
 }
 
-/* Table list layouts. */
-.advanced-list.list-style-table-list-1 .advanced-list-container,
-.advanced-list.list-style-table-list-2 .advanced-list-container {
-  grid-template-columns: 1fr;
-}
-
-.advanced-list.list-style-table-list-1 .advanced-list-card {
-  flex-direction: row;
-  align-items: center;
-  height: auto;
-  padding: 1rem 1.5rem;
-}
-
-.advanced-list.list-style-table-list-2 .advanced-list-item {
-  height: auto;
-  border-bottom: 1px solid #d8d8d8;
-  border-radius: 0;
-}
-
-.advanced-list.list-style-table-list-2 .advanced-list-card {
-  padding: 1rem 0;
-}
-
-/* Hero card layout: first result spans the full row. */
+/* Hero Card Layout */
 .advanced-list.list-style-hero-card .advanced-list-container {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .advanced-list.list-style-hero-card .advanced-list-item.hero-item {
@@ -234,43 +84,173 @@
   height: 380px;
 }
 
-/* Image-top card grid. */
-.advanced-list.list-style-card-image-top .advanced-list-container {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Table List Layouts */
+.advanced-list.list-style-table-list-1 .advanced-list-container,
+.advanced-list.list-style-table-list-2 .advanced-list-container {
+  grid-template-columns: 1fr;
+}
+
+.advanced-list.list-style-table-list-1 .advanced-list-card {
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+  padding: 1rem 1.5rem;
+}
+
+/* Card Image Top Layout */
+.advanced-list.list-style-card-image-top .advanced-list-card {
+  justify-content: flex-start;
 }
 
 .advanced-list.list-style-card-image-top .advanced-list-media {
-  width: calc(100% + 3rem);
-  margin: -1.5rem -1.5rem 1rem;
-  border-radius: 0;
+  height: 220px;
+  margin-bottom: 1.25rem;
 }
 
-@media (width <= 1024px) {
+/* ==========================================================================
+   CARD STYLING & SCHEMES
+   ========================================================================== */
+
+.advanced-list .advanced-list-item {
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 453px; /* Exact Figma Spec */
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.advanced-list .advanced-list-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.advanced-list .advanced-list-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Background Color Schemes */
+.advanced-list .advanced-list-item.card-color-grey {
+  background-color: #f3f3f3;
+  color: #0c0c0d;
+}
+
+.advanced-list .advanced-list-item.card-color-black {
+  background-color: #20293c;
+  color: #ffffff;
+}
+
+.advanced-list .advanced-list-item.card-color-blue {
+  background-color: #4673db;
+  color: #ffffff;
+}
+
+/* Media / Images */
+.advanced-list .advanced-list-media {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.advanced-list .advanced-list-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card Typography */
+.advanced-list .advanced-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+.advanced-list .advanced-list-overline {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.advanced-list .advanced-list-card-title {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.advanced-list .advanced-list-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.advanced-list .advanced-list-card-title a:hover {
+  text-decoration: underline;
+}
+
+.advanced-list .advanced-list-description {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.advanced-list .advanced-list-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.advanced-list .advanced-list-empty {
+  grid-column: 1 / -1;
+  padding: 3rem;
+  text-align: center;
+  color: #777;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  border: 1px dashed #ccc;
+}
+
+/* ==========================================================================
+   RESPONSIVE TOUCH SCROLL TRANSFORMATION
+   ========================================================================== */
+
+@media (max-width: 1024px) {
   .advanced-list.list-style-card-m-scroll .advanced-list-container,
   .advanced-list.list-style-card-4col-scroll .advanced-list-container,
   .advanced-list.list-style-card-2col-scroll .advanced-list-container {
     display: flex;
     overflow-x: auto;
-    padding-bottom: 1rem;
     scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
     -webkit-overflow-scrolling: touch;
   }
 
   .advanced-list.list-style-card-m-scroll .advanced-list-item,
-  .advanced-list.list-style-card-4col-scroll .advanced-list-item,
-  .advanced-list.list-style-card-2col-scroll .advanced-list-item {
+  .advanced-list.list-style-card-4col-scroll .advanced-list-item {
     flex: 0 0 280px;
     scroll-snap-align: start;
-  }
-
-  .advanced-list.list-style-hero-card .advanced-list-container,
-  .advanced-list.list-style-card-image-top .advanced-list-container {
-    grid-template-columns: 1fr;
-  }
-
-  .advanced-list.list-style-hero-card .hero-item .advanced-list-card {
-    grid-template-columns: 1fr;
-    height: auto;
   }
 
   .advanced-list .advanced-list-heading {
