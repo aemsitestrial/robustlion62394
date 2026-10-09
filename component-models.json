@@ -218,7 +218,7 @@
         "component": "text",
         "name": "parentPage",
         "label": "Parent Page Path",
-        "description": "Folder path to list children from (e.g. /blocks).",
+        "description": "Folder path to list children from (e.g. /blocks). Defaults to current page if empty.",
         "value": "",
         "valueType": "string",
         "condition": {
@@ -234,7 +234,7 @@
         "component": "number",
         "name": "childDepth",
         "label": "Child Depth",
-        "description": "Directory depth (e.g. 1 for direct children, 2 for grandchildren).",
+        "description": "Directory depth relative to parent path (1 = direct children, 2 = grandchildren).",
         "value": "1",
         "valueType": "number",
         "condition": {
@@ -250,7 +250,7 @@
         "component": "richtext",
         "name": "fixedItems",
         "label": "Fixed List Items",
-        "description": "Bulleted list of links for fixed items.",
+        "description": "Add a bulleted list of links directly in the editor.",
         "value": "",
         "valueType": "string",
         "condition": {
@@ -359,22 +359,6 @@
             "value": "1-each"
           }
         ]
-      },
-      {
-        "component": "richtext",
-        "name": "manualFragments",
-        "label": "Manual Content Fragments",
-        "description": "Add Content Fragment paths as bulleted links.",
-        "value": "",
-        "valueType": "string",
-        "condition": {
-          "==": [
-            {
-              "var": "listType"
-            },
-            "manual"
-          ]
-        }
       },
       {
         "component": "select",
@@ -523,13 +507,6 @@
             "value": "card-4col-scroll"
           }
         ]
-      },
-      {
-        "component": "text",
-        "name": "reportCtaTitle",
-        "label": "Report CTA Title",
-        "value": "",
-        "valueType": "string"
       },
       {
         "component": "container",
@@ -6448,6 +6425,22 @@
         "description": "Folder path to list children from (e.g. /news). Defaults to current page if empty.",
         "value": "",
         "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "children"
+          ]
+        }
+      },
+      {
+        "component": "number",
+        "name": "childDepth",
+        "label": "Child Depth",
+        "description": "Directory depth levels to include (1 = direct children, 2 = direct children + grandchildren).",
+        "value": "1",
+        "valueType": "number",
         "condition": {
           "==": [
             {

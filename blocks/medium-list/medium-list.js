@@ -11,6 +11,7 @@ function getProp(block, name, fallback = '') {
   const fieldOrder = [
     'listType',
     'parentPage',
+    'childDepth',
     'maxItems',
     'orderBy',
     'sortOrder',
@@ -151,6 +152,8 @@ function filterAndSortItems(items, config) {
 
   if (config.listType === 'children') {
     const parent = normalizePath(config.parentPage || window.location.pathname);
+    const targetDepth = Number(config.childDepth) || 1;
+
     result = result.filter((item) => {
       const itemPath = normalizePath(item.path);
       if (itemPath === parent) return false;
@@ -159,7 +162,10 @@ function filterAndSortItems(items, config) {
       const relativePath = parent === '/'
         ? itemPath.replace(/^\/+/, '')
         : itemPath.slice(parent.length + 1);
-      return relativePath.split('/').filter(Boolean).length === 1;
+
+      const depth = relativePath.split('/').filter(Boolean).length;
+      // Inclusive Depth Check (1 <= depth <= targetDepth)
+      return depth >= 1 && depth <= targetDepth;
     });
   } else if (config.listType === 'search') {
     const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
@@ -260,7 +266,6 @@ function renderItem(item, config) {
 export default async function decorate(block) {
   const listType = String(getProp(block, 'listType', 'children')).toLowerCase().trim();
 
-  // Determine Max Items based on active mode
   let rawMax = getProp(block, 'maxItems', '5');
   if (listType === 'search') rawMax = getProp(block, 'maxItemsSearch', rawMax);
   if (listType === 'tags') rawMax = getProp(block, 'maxItemsTags', rawMax);
@@ -268,6 +273,7 @@ export default async function decorate(block) {
   const config = {
     listType,
     parentPage: getProp(block, 'parentPage'),
+    childDepth: getProp(block, 'childDepth', '1'),
     searchQuery: getProp(block, 'searchQuery'),
     searchIn: getProp(block, 'searchIn'),
     tags: getProp(block, 'tags'),
@@ -281,7 +287,6 @@ export default async function decorate(block) {
     showDate: getBoolean(block, 'showDate', false),
   };
 
-  // 1. Preserve original UE Instrumentation DOM node
   let ueStore = block.querySelector('.medium-list-ue-store');
   if (!ueStore) {
     ueStore = document.createElement('div');
@@ -292,11 +297,9 @@ export default async function decorate(block) {
     }
   }
 
-  // 2. Remove stale rendered markup on live re-render
   const oldList = block.querySelector('ul.medium-list-container');
   if (oldList) oldList.remove();
 
-  // 3. Resolve Items
   let items = [];
   if (config.listType === 'fixed') {
     items = parseFixedItems(ueStore);
@@ -305,7 +308,6 @@ export default async function decorate(block) {
     items = filterAndSortItems(rawIndex, config);
   }
 
-  // 4. Render Clean Grid
   const ul = document.createElement('ul');
   ul.className = 'medium-list-container';
 

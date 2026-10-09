@@ -44,6 +44,15 @@
         },
         {
           "component": "number",
+          "name": "childDepth",
+          "label": "Child Depth",
+          "description": "Directory depth levels to include (1 = direct children, 2 = direct children + grandchildren).",
+          "value": "1",
+          "valueType": "number",
+          "condition": { "==": [{ "var": "listType" }, "children"] }
+        },
+        {
+          "component": "number",
           "name": "maxItems",
           "label": "Maximum Items",
           "value": "5",

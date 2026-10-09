@@ -1,7 +1,3 @@
-/* ==========================================================================
-   ADVANCED LIST BLOCK STYLING
-   ========================================================================== */
-
 .advanced-list-wrapper {
   width: 100%;
   max-width: 1440px;
@@ -10,7 +6,6 @@
   box-sizing: border-box;
 }
 
-/* Header Lockup */
 .advanced-list .advanced-list-header {
   display: flex;
   justify-content: space-between;
@@ -45,7 +40,6 @@
   opacity: 0.85;
 }
 
-/* Base Grid */
 .advanced-list .advanced-list-container {
   list-style: none;
   margin: 0;
@@ -54,15 +48,55 @@
   gap: 1.5rem;
 }
 
-/* ==========================================================================
-   BASE CARD & ELEMENT STYLING
-   ========================================================================== */
+.advanced-list.list-style-card-m-scroll .advanced-list-container,
+.advanced-list.list-style-card-4col-scroll .advanced-list-container {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.advanced-list.list-style-card-2col-scroll .advanced-list-container {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.advanced-list.list-style-hero-card .advanced-list-container {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.advanced-list.list-style-hero-card .advanced-list-item.hero-item {
+  grid-column: 1 / -1;
+}
+
+.advanced-list.list-style-hero-card .hero-item .advanced-list-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  height: 380px;
+}
+
+.advanced-list.list-style-table-list-1 .advanced-list-container,
+.advanced-list.list-style-table-list-2 .advanced-list-container {
+  grid-template-columns: 1fr;
+}
+
+.advanced-list.list-style-table-list-1 .advanced-list-card {
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+  padding: 1rem 1.5rem;
+}
+
+.advanced-list.list-style-card-image-top .advanced-list-card {
+  justify-content: flex-start;
+}
+
+.advanced-list.list-style-card-image-top .advanced-list-media {
+  height: 220px;
+  margin-bottom: 1.25rem;
+}
 
 .advanced-list .advanced-list-item {
   display: flex;
   border-radius: 12px;
   overflow: hidden;
-  height: 453px; /* Exact Figma Spec */
+  height: 453px;
   box-sizing: border-box;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -82,23 +116,6 @@
   position: relative;
 }
 
-/* Media / Images */
-.advanced-list .advanced-list-media {
-  width: 100%;
-  height: 200px;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.advanced-list .advanced-list-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Background Color Schemes */
 .advanced-list .advanced-list-item.card-color-grey {
   background-color: #f3f3f3;
   color: #0c0c0d;
@@ -114,7 +131,21 @@
   color: #fff;
 }
 
-/* Card Typography */
+.advanced-list .advanced-list-media {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.advanced-list .advanced-list-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .advanced-list .advanced-list-body {
   display: flex;
   flex-direction: column;
@@ -156,7 +187,6 @@
   opacity: 0.8;
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -179,63 +209,6 @@
   border-radius: 12px;
   border: 1px dashed #ccc;
 }
-
-/* ==========================================================================
-   LAYOUT VARIATIONS & OVERRIDES
-   ========================================================================== */
-
-/* 4 Column Grid & M Scroll */
-.advanced-list.list-style-card-m-scroll .advanced-list-container,
-.advanced-list.list-style-card-4col-scroll .advanced-list-container {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-/* 2 Column Grid */
-.advanced-list.list-style-card-2col-scroll .advanced-list-container {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-/* Table List Layouts */
-.advanced-list.list-style-table-list-1 .advanced-list-container,
-.advanced-list.list-style-table-list-2 .advanced-list-container {
-  grid-template-columns: 1fr;
-}
-
-.advanced-list.list-style-table-list-1 .advanced-list-card {
-  flex-direction: row;
-  align-items: center;
-  height: auto;
-  padding: 1rem 1.5rem;
-}
-
-/* Card Image Top Layout */
-.advanced-list.list-style-card-image-top .advanced-list-card {
-  justify-content: flex-start;
-}
-
-.advanced-list.list-style-card-image-top .advanced-list-media {
-  height: 220px;
-  margin-bottom: 1.25rem;
-}
-
-/* Hero Card Layout */
-.advanced-list.list-style-hero-card .advanced-list-container {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.advanced-list.list-style-hero-card .advanced-list-item.hero-item {
-  grid-column: 1 / -1;
-}
-
-.advanced-list.list-style-hero-card .hero-item .advanced-list-card {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  height: 380px;
-}
-
-/* ==========================================================================
-   RESPONSIVE TOUCH SCROLL TRANSFORMATION
-   ========================================================================== */
 
 @media (width <= 1024px) {
   .advanced-list.list-style-card-m-scroll .advanced-list-container,

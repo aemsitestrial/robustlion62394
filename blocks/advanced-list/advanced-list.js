@@ -1,10 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { getAEMPublish } from '../../scripts/endpointconfig.js';
 
-/**
- * Robust property extractor reading values across UE dataset attributes,
- * store nodes, and key-value rows without breaking live instrumentation.
- */
 function getProp(block, name, fallback = '') {
   const lowerName = name.toLowerCase();
   const normalizedName = lowerName.replace(/[-_\s]/g, '');
@@ -39,7 +35,6 @@ function getProp(block, name, fallback = '') {
     if (value) return value;
   }
 
-  // Key-Value row lookup
   const rows = roots.flatMap((root) => [...root.children])
     .filter((row) => !row.classList.contains('advanced-list-container'));
   const targetRow = rows.find((row) => {
@@ -107,9 +102,6 @@ function parseFixedOrManualItems(source) {
   }));
 }
 
-/**
- * Filter & Sort Pipeline handling Depth, Tags Scoping, and Priority Tag Deduplication
- */
 function filterAndSortItems(items, config) {
   let result = items.filter((item) => item.path);
 
@@ -134,7 +126,6 @@ function filterAndSortItems(items, config) {
     const scopePath = config.tagsParentPage ? normalizePath(config.tagsParentPage) : null;
     const targetDepth = Number(config.tagsChildDepth) || 1;
 
-    // Filter scoped items matching tags
     const candidateItems = result.filter((item) => {
       const itemPath = normalizePath(item.path);
       if (scopePath && !itemPath.startsWith(`${scopePath}/`)) return false;
@@ -153,7 +144,6 @@ function filterAndSortItems(items, config) {
         : authoredTags.some((t) => itemTags.some((it) => it.includes(t)));
     });
 
-    // Tag result type: "1 result each tag" deduplication
     if (config.tagResultType === '1-each' && authoredTags.length > 0) {
       const uniqueByTag = [];
       const usedPaths = new Set();
@@ -169,7 +159,7 @@ function filterAndSortItems(items, config) {
           usedPaths.add(matchingItem.path);
           uniqueByTag.push({
             ...matchingItem,
-            primaryTag: tag, // Overline display name
+            primaryTag: tag,
           });
         }
       });
@@ -179,7 +169,6 @@ function filterAndSortItems(items, config) {
     }
   }
 
-  // Sort
   result.sort((a, b) => {
     const keyA = config.orderBy === 'modified' ? (a.lastModified || 0) : (a.title || '');
     const keyB = config.orderBy === 'modified' ? (b.lastModified || 0) : (b.title || '');
@@ -192,7 +181,6 @@ function filterAndSortItems(items, config) {
 
 function applyPersonalizationHook(items, config) {
   if (!config.personalizationEnabled) return items;
-  // Personalization logic hook placeholder
   return items;
 }
 
@@ -223,7 +211,6 @@ function renderItem(item, config, index) {
   const card = document.createElement('div');
   card.className = 'advanced-list-card';
 
-  // 1. Media
   if (!config.hideImage && item.image) {
     const picContainer = document.createElement('div');
     picContainer.className = 'advanced-list-media';
@@ -234,7 +221,6 @@ function renderItem(item, config, index) {
   const body = document.createElement('div');
   body.className = 'advanced-list-body';
 
-  // 2. Overline Tag
   if (config.showEyebrow && config.displayTags) {
     const eyebrowText = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
     if (eyebrowText) {
@@ -245,7 +231,6 @@ function renderItem(item, config, index) {
     }
   }
 
-  // 3. Title
   if (!config.hideTitle) {
     const title = document.createElement('h3');
     title.className = 'advanced-list-card-title';
@@ -260,7 +245,6 @@ function renderItem(item, config, index) {
     body.append(title);
   }
 
-  // 4. Description
   if (config.showDescription && item.description) {
     const desc = document.createElement('p');
     desc.className = 'advanced-list-description';
@@ -268,7 +252,6 @@ function renderItem(item, config, index) {
     body.append(desc);
   }
 
-  // 5. Meta Footer
   const meta = document.createElement('div');
   meta.className = 'advanced-list-meta';
 
@@ -328,11 +311,9 @@ export default async function decorate(block) {
     reportCtaTitle: getProp(block, 'reportCtaTitle'),
   };
 
-  // Reset and set layout class
   block.className = block.className.replace(/\blist-style-\S+/g, '').trim();
   block.classList.add(`list-style-${config.listStyle}`);
 
-  // UE Store Handling
   let ueStore = block.querySelector('.advanced-list-ue-store');
   if (!ueStore) {
     ueStore = document.createElement('div');
@@ -343,10 +324,8 @@ export default async function decorate(block) {
     }
   }
 
-  // Clear live elements on re-render
   [...block.querySelectorAll('.advanced-list-header, .advanced-list-container')].forEach((el) => el.remove());
 
-  // Render Header Lockup
   if (config.title || config.description || (config.viewAllText && config.viewAllLink)) {
     const header = document.createElement('div');
     header.className = 'advanced-list-header';
@@ -370,7 +349,6 @@ export default async function decorate(block) {
     block.append(header);
   }
 
-  // Fetch Items
   let items = [];
   if (config.listType === 'fixed' || config.listType === 'manual') {
     items = parseFixedOrManualItems(ueStore);
@@ -381,7 +359,6 @@ export default async function decorate(block) {
 
   items = applyPersonalizationHook(items, config);
 
-  // Render Grid
   const ul = document.createElement('ul');
   ul.className = 'advanced-list-container';
 
