@@ -19,9 +19,11 @@ function getProp(block, name, fallback = '') {
     'searchQuery',
     'searchIn',
     'maxItemsSearch',
-    'tags',
     'tagsParentPage',
+    'tagsChildDepth',
+    'tags',
     'tagMatch',
+    'tagResultType',
     'maxItemsTags',
     'displayAsTeaser',
     'showDescription',
@@ -134,28 +136,7 @@ async function fetchQueryIndex() {
   }
 }
 
-/**
- * Enhanced Fixed Items parser supporting Universal Editor Multifields + legacy Rich Text lists
- */
 function parseFixedItems(block) {
-  const store = block.querySelector('.medium-list-ue-store') || block;
-  const itemRows = [...store.querySelectorAll('[data-aue-model="fixed-item"], .fixed-item')];
-
-  if (itemRows.length > 0) {
-    return itemRows.map((row) => {
-      const path = getProp(row, 'fixedItemPath') || getProp(row, 'path');
-      const title = getProp(row, 'fixedItemTitle') || getProp(row, 'title');
-      const target = getProp(row, 'fixedItemTarget', '_self');
-
-      return {
-        path,
-        title: title || path,
-        target,
-      };
-    }).filter((item) => item.path);
-  }
-
-  // Fallback: Parse legacy bulleted <a> links
   const source = block.querySelector('[data-aue-prop="fixedItems"]') || block.querySelector('ul');
   if (!source) return [];
 
@@ -163,7 +144,6 @@ function parseFixedItems(block) {
   return links.map((a) => ({
     path: a.getAttribute('href'),
     title: a.textContent.trim() || a.getAttribute('href'),
-    target: a.getAttribute('target') || '_self',
     description: a.dataset.description || '',
     image: a.querySelector('img')?.src || '',
   }));
@@ -199,17 +179,49 @@ function filterAndSortItems(items, config) {
       return matchesText && matchesScope;
     });
   } else if (config.listType === 'tags') {
-    const tags = (config.tags || '').split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+    const rawTags = Array.isArray(config.tags) ? config.tags.join(',') : String(config.tags || '');
+    const authoredTags = rawTags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
     const scopePath = config.tagsParentPage ? normalizePath(config.tagsParentPage) : null;
+    const targetDepth = Number(config.tagsChildDepth) || 1;
 
-    result = result.filter((item) => {
+    const candidateItems = result.filter((item) => {
+      const itemPath = normalizePath(item.path);
+      if (scopePath && !itemPath.startsWith(`${scopePath}/`)) return false;
+
+      if (scopePath) {
+        const relativePath = scopePath === '/'
+          ? itemPath.replace(/^\/+/, '')
+          : itemPath.slice(scopePath.length + 1);
+        const depth = relativePath.split('/').filter(Boolean).length;
+        if (depth < 1 || depth > targetDepth) return false;
+      }
+
       const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
-      const matchesTag = config.tagMatch === 'all'
-        ? tags.every((t) => itemTags.includes(t))
-        : tags.some((t) => itemTags.includes(t));
-      const matchesScope = !scopePath || normalizePath(item.path).startsWith(`${scopePath}/`);
-      return matchesTag && matchesScope;
+      return config.tagMatch === 'all'
+        ? authoredTags.every((t) => itemTags.some((it) => it.includes(t)))
+        : authoredTags.some((t) => itemTags.some((it) => it.includes(t)));
     });
+
+    if (config.tagResultType === '1-each' && authoredTags.length > 0) {
+      const uniqueByTag = [];
+      const usedPaths = new Set();
+
+      authoredTags.forEach((tag) => {
+        const matchingItem = candidateItems.find((item) => {
+          if (usedPaths.has(item.path)) return false;
+          const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
+          return itemTags.some((it) => it.includes(tag));
+        });
+
+        if (matchingItem) {
+          usedPaths.add(matchingItem.path);
+          uniqueByTag.push(matchingItem);
+        }
+      });
+      result = uniqueByTag;
+    } else {
+      result = candidateItems;
+    }
   }
 
   // Sort
@@ -246,12 +258,6 @@ function renderItem(item, config) {
   const link = document.createElement('a');
   link.href = normalizePath(item.path);
   link.textContent = item.title || item.name || 'Untitled';
-
-  if (item.target === '_blank') {
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-  }
-
   title.append(link);
   body.append(title);
 
@@ -303,9 +309,11 @@ export default async function decorate(block) {
     childDepth: getProp(block, 'childDepth', '1'),
     searchQuery: getProp(block, 'searchQuery'),
     searchIn: getProp(block, 'searchIn'),
-    tags: getProp(block, 'tags'),
     tagsParentPage: getProp(block, 'tagsParentPage'),
+    tagsChildDepth: getProp(block, 'tagsChildDepth', '1'),
+    tags: getProp(block, 'tags'),
     tagMatch: getProp(block, 'tagMatch', 'any'),
+    tagResultType: getProp(block, 'tagResultType', 'all'),
     orderBy: getProp(block, 'orderBy', 'title'),
     sortOrder: getProp(block, 'sortOrder', 'ascending'),
     maxItems: Number(rawMax) || 5,

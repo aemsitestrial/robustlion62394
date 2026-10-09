@@ -6516,14 +6516,12 @@
         }
       },
       {
-        "component": "multifield",
+        "component": "richtext",
         "name": "fixedItems",
-        "label": "Fixed List Items",
-        "description": "Add items with custom path, title, and target window settings.",
-        "value": [],
-        "valueType": "object[]",
-        "composite": true,
-        "model": "fixed-item",
+        "label": "Fixed Items",
+        "description": "Add a bulleted list of links with optional text directly in the editor.",
+        "value": "",
+        "valueType": "string",
         "condition": {
           "==": [
             {
@@ -6581,10 +6579,10 @@
         }
       },
       {
-        "component": "aem-tag",
-        "name": "tags",
-        "label": "Tags (Comma-separated)",
-        "description": "e.g. cloud, platform, security",
+        "component": "text",
+        "name": "tagsParentPage",
+        "label": "Parent Page Path",
+        "description": "Optional folder path to scope tagged pages (e.g. /news).",
         "value": "",
         "valueType": "string",
         "condition": {
@@ -6597,10 +6595,26 @@
         }
       },
       {
-        "component": "text",
-        "name": "tagsParentPage",
-        "label": "Parent Page Path",
-        "description": "Optional path to scope tagged pages.",
+        "component": "number",
+        "name": "tagsChildDepth",
+        "label": "Child Depth",
+        "description": "Directory depth levels to search (1 = direct children, 2 = grandchildren).",
+        "value": "1",
+        "valueType": "number",
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        }
+      },
+      {
+        "component": "aem-tag",
+        "name": "tags",
+        "label": "Tags (Comma-separated)",
+        "description": "Select tags or enter comma-separated tags.",
         "value": "",
         "valueType": "string",
         "condition": {
@@ -6615,7 +6629,7 @@
       {
         "component": "select",
         "name": "tagMatch",
-        "label": "Match Mode",
+        "label": "Tags Match",
         "value": "any",
         "valueType": "string",
         "options": [
@@ -6626,6 +6640,31 @@
           {
             "name": "All Tags (Match All)",
             "value": "all"
+          }
+        ],
+        "condition": {
+          "==": [
+            {
+              "var": "listType"
+            },
+            "tags"
+          ]
+        }
+      },
+      {
+        "component": "select",
+        "name": "tagResultType",
+        "label": "Tag result Type",
+        "value": "all",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "All results (Default)",
+            "value": "all"
+          },
+          {
+            "name": "1 result each tag",
+            "value": "1-each"
           }
         ],
         "condition": {
@@ -6700,44 +6739,6 @@
           {
             "name": "No",
             "value": "false"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "fixed-item",
-    "fields": [
-      {
-        "component": "text",
-        "name": "fixedItemPath",
-        "label": "Fixed Item Path",
-        "description": "Page or media URL path (e.g. /news/article-1).",
-        "value": "",
-        "valueType": "string"
-      },
-      {
-        "component": "text",
-        "name": "fixedItemTitle",
-        "label": "Fixed Item Title",
-        "description": "Custom link label text.",
-        "value": "",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "fixedItemTarget",
-        "label": "Fixed Item Target",
-        "value": "_self",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Default",
-            "value": "_self"
-          },
-          {
-            "name": "Open in New Window",
-            "value": "_blank"
           }
         ]
       }
