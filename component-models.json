@@ -6466,56 +6466,6 @@
         }
       },
       {
-        "component": "select",
-        "name": "orderBy",
-        "label": "Order By",
-        "value": "title",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Title",
-            "value": "title"
-          },
-          {
-            "name": "Last Modified",
-            "value": "modified"
-          }
-        ],
-        "condition": {
-          "==": [
-            {
-              "var": "listType"
-            },
-            "children"
-          ]
-        }
-      },
-      {
-        "component": "select",
-        "name": "sortOrder",
-        "label": "Sort Order",
-        "value": "ascending",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Ascending (A-Z / Oldest)",
-            "value": "ascending"
-          },
-          {
-            "name": "Descending (Z-A / Newest)",
-            "value": "descending"
-          }
-        ],
-        "condition": {
-          "==": [
-            {
-              "var": "listType"
-            },
-            "children"
-          ]
-        }
-      },
-      {
         "component": "richtext",
         "name": "fixedItems",
         "label": "Fixed Items",
@@ -6692,6 +6642,110 @@
         }
       },
       {
+        "component": "text",
+        "name": "title",
+        "label": "Main Block Title",
+        "description": "Optional section title rendered above the list.",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "description",
+        "label": "Section Description",
+        "description": "Optional section description rendered below the main title.",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "viewAllText",
+        "label": "View All Text",
+        "description": "Button label (e.g. View All or More).",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "viewAllLink",
+        "label": "View All Link",
+        "description": "Destination path for the View All button.",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "linkItems",
+        "label": "Link Items",
+        "value": "true",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "true"
+          },
+          {
+            "name": "No",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "orderBy",
+        "label": "Order By",
+        "value": "title",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Title",
+            "value": "title"
+          },
+          {
+            "name": "Last Modified",
+            "value": "modified"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "sortOrder",
+        "label": "Sort Order",
+        "value": "ascending",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Ascending (A-Z / Oldest)",
+            "value": "ascending"
+          },
+          {
+            "name": "Descending (Z-A / Newest)",
+            "value": "descending"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "cardColor",
+        "label": "Card Color",
+        "value": "grey",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Grey",
+            "value": "grey"
+          },
+          {
+            "name": "Blue",
+            "value": "blue"
+          },
+          {
+            "name": "Black",
+            "value": "black"
+          }
+        ]
+      },
+      {
         "component": "select",
         "name": "listStyle",
         "label": "List Style",
@@ -6705,6 +6759,10 @@
           {
             "name": "Cards (M Scroll)",
             "value": "card-m-scroll"
+          },
+          {
+            "name": "Hero Card",
+            "value": "hero-card"
           }
         ]
       },

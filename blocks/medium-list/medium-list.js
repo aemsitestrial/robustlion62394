@@ -13,8 +13,6 @@ function getProp(block, name, fallback = '') {
     'parentPage',
     'childDepth',
     'maxItems',
-    'orderBy',
-    'sortOrder',
     'fixedItems',
     'searchQuery',
     'searchIn',
@@ -25,6 +23,14 @@ function getProp(block, name, fallback = '') {
     'tagMatch',
     'tagResultType',
     'maxItemsTags',
+    'title',
+    'description',
+    'viewAllText',
+    'viewAllLink',
+    'linkItems',
+    'orderBy',
+    'sortOrder',
+    'cardColor',
     'listStyle',
     'showDescription',
     'showDate',
@@ -59,11 +65,12 @@ function getProp(block, name, fallback = '') {
   }
 
   const rows = roots.flatMap((root) => [...root.children])
-    .filter((row) => !row.classList.contains('medium-list-container'));
+    .filter((row) => !row.classList.contains('medium-list-container') && !row.classList.contains('medium-list-header'));
   const aliases = {
     parentpage: ['parentpagepath'],
     searchin: ['searchinpath'],
     tagsparentpage: ['parentpagepath', 'tagparentpagepath'],
+    viewalllink: ['viewallpath'],
   };
   const acceptableNames = [normalizedName, ...(aliases[normalizedName] || [])];
   const targetRow = rows.find((row) => {
@@ -83,7 +90,7 @@ function getProp(block, name, fallback = '') {
     const stores = [...block.querySelectorAll('.medium-list-ue-store')];
     const storedRows = stores.length
       ? stores.flatMap((store) => [...store.children])
-      : [...block.children].filter((child) => !child.matches('ul.medium-list-container'));
+      : [...block.children].filter((child) => !child.matches('ul.medium-list-container') && !child.matches('.medium-list-header'));
     const row = storedRows[fieldIndex];
     if (row) {
       const cells = [...row.children];
@@ -225,7 +232,7 @@ function filterAndSortItems(items, config) {
     }
   }
 
-  // Sort
+  // Common Sort
   result.sort((a, b) => {
     const keyA = config.orderBy === 'modified' ? (a.lastModified || 0) : (a.title || '');
     const keyB = config.orderBy === 'modified' ? (b.lastModified || 0) : (b.title || '');
@@ -237,109 +244,101 @@ function filterAndSortItems(items, config) {
   return config.maxItems > 0 ? result.slice(0, config.maxItems) : result;
 }
 
-function renderItem(item, config) {
+function renderItem(item, config, index = 0) {
   const li = document.createElement('li');
   li.className = 'medium-list-item';
+
+  const isHero = config.listStyle === 'hero-card' && index === 0;
+  if (isHero) {
+    li.classList.add('hero-item');
+  }
 
   const card = document.createElement('div');
   card.className = 'medium-list-card';
 
-  if (!item.image) {
+  // Apply Card Theme Color or Fallback Blue if Image is Missing
+  let effectiveColor = config.cardColor;
+  if (!item.image && config.cardColor === 'grey') {
+    effectiveColor = 'blue';
+  }
+  card.classList.add(`card-color-${effectiveColor}`);
+
+  if (item.image) {
+    const picContainer = document.createElement('div');
+    picContainer.className = 'medium-list-media';
+    picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
+    card.append(picContainer);
+  } else {
     card.classList.add('no-image');
   }
 
-  if (config.listStyle === 'card-m-scroll') {
-    if (item.image) {
-      const picContainer = document.createElement('div');
-      picContainer.className = 'medium-list-media';
-      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '400' }]));
-      card.append(picContainer);
-    }
+  const body = document.createElement('div');
+  body.className = 'medium-list-body';
 
-    const body = document.createElement('div');
-    body.className = 'medium-list-body';
+  // Eyebrow Tag Header
+  const rawTag = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
+  if (rawTag) {
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'medium-list-eyebrow';
+    eyebrow.textContent = rawTag.replace(/^.*:/, '').toUpperCase();
+    body.append(eyebrow);
+  }
 
-    // Tag Eyebrow
-    const rawTag = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
-    if (rawTag) {
-      const eyebrow = document.createElement('span');
-      eyebrow.className = 'medium-list-eyebrow';
-      eyebrow.textContent = rawTag.replace(/^.*:/, '').toUpperCase();
-      body.append(eyebrow);
-    }
-
-    const title = document.createElement('h3');
-    title.className = 'medium-list-title';
+  // Title
+  const title = document.createElement('h3');
+  title.className = 'medium-list-title';
+  if (config.linkItems) {
+    const link = document.createElement('a');
+    link.href = normalizePath(item.path);
+    link.textContent = item.title || item.name || 'Untitled';
+    title.append(link);
+  } else {
     title.textContent = item.title || item.name || 'Untitled';
-    body.append(title);
+  }
+  body.append(title);
 
-    if (config.showDescription && item.description) {
-      const desc = document.createElement('p');
-      desc.className = 'medium-list-description';
-      desc.textContent = item.description;
-      body.append(desc);
+  // Description
+  if (config.showDescription && item.description) {
+    const desc = document.createElement('p');
+    desc.className = 'medium-list-description';
+    desc.textContent = item.description;
+    body.append(desc);
+  }
+
+  // Modification Date
+  if (config.showDate && item.lastModified) {
+    const date = document.createElement('time');
+    date.className = 'medium-list-date';
+    const rawDate = item.lastModified;
+    const numericTimestamp = typeof rawDate === 'number'
+      || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
+    const timestamp = numericTimestamp
+      ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
+      : rawDate;
+    const parsed = new Date(timestamp);
+    if (!Number.isNaN(parsed.valueOf())) {
+      date.dateTime = parsed.toISOString();
+      date.textContent = parsed.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } else {
+      date.textContent = String(rawDate);
     }
+    body.append(date);
+  }
 
+  // CTA
+  if (config.linkItems && (config.listStyle === 'card-m-scroll' || isHero)) {
     const cta = document.createElement('a');
     cta.className = 'medium-list-cta';
     cta.href = normalizePath(item.path);
     cta.innerHTML = 'Explore &rarr;';
     body.append(cta);
-
-    card.append(body);
-  } else {
-    // Default Teaser Rendering
-    if (item.image) {
-      const picContainer = document.createElement('div');
-      picContainer.className = 'medium-list-media';
-      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '400' }]));
-      card.append(picContainer);
-    }
-
-    const body = document.createElement('div');
-    body.className = 'medium-list-body';
-
-    const title = document.createElement('h3');
-    title.className = 'medium-list-title';
-    const link = document.createElement('a');
-    link.href = normalizePath(item.path);
-    link.textContent = item.title || item.name || 'Untitled';
-    title.append(link);
-    body.append(title);
-
-    if (config.showDescription && item.description) {
-      const desc = document.createElement('p');
-      desc.className = 'medium-list-description';
-      desc.textContent = item.description;
-      body.append(desc);
-    }
-
-    if (config.showDate && item.lastModified) {
-      const date = document.createElement('time');
-      date.className = 'medium-list-date';
-      const rawDate = item.lastModified;
-      const numericTimestamp = typeof rawDate === 'number'
-        || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
-      const timestamp = numericTimestamp
-        ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
-        : rawDate;
-      const parsed = new Date(timestamp);
-      if (!Number.isNaN(parsed.valueOf())) {
-        date.dateTime = parsed.toISOString();
-        date.textContent = parsed.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        });
-      } else {
-        date.textContent = String(rawDate);
-      }
-      body.append(date);
-    }
-
-    card.append(body);
   }
 
+  card.append(body);
   li.append(card);
   return li;
 }
@@ -362,9 +361,15 @@ export default async function decorate(block) {
     tags: getProp(block, 'tags'),
     tagMatch: getProp(block, 'tagMatch', 'any'),
     tagResultType: getProp(block, 'tagResultType', 'all'),
-    listStyle: getProp(block, 'listStyle', 'default').toLowerCase(),
+    title: getProp(block, 'title'),
+    description: getProp(block, 'description'),
+    viewAllText: getProp(block, 'viewAllText'),
+    viewAllLink: getProp(block, 'viewAllLink'),
+    linkItems: getBoolean(block, 'linkItems', true),
     orderBy: getProp(block, 'orderBy', 'title'),
     sortOrder: getProp(block, 'sortOrder', 'ascending'),
+    cardColor: getProp(block, 'cardColor', 'grey').toLowerCase(),
+    listStyle: getProp(block, 'listStyle', 'default').toLowerCase(),
     maxItems: Number(rawMax) || 5,
     showDescription: getBoolean(block, 'showDescription', true),
     showDate: getBoolean(block, 'showDate', false),
@@ -383,9 +388,47 @@ export default async function decorate(block) {
     }
   }
 
+  // Clear Stale Elements
+  const oldHeader = block.querySelector('.medium-list-header');
+  if (oldHeader) oldHeader.remove();
   const oldList = block.querySelector('ul.medium-list-container');
   if (oldList) oldList.remove();
 
+  // 1. Render Universal Header Lockup
+  if (config.title || config.viewAllText) {
+    const header = document.createElement('div');
+    header.className = 'medium-list-header';
+
+    const titleGroup = document.createElement('div');
+    titleGroup.className = 'medium-list-header-group';
+
+    if (config.title) {
+      const h2 = document.createElement('h2');
+      h2.className = 'medium-list-main-title';
+      h2.textContent = config.title;
+      titleGroup.append(h2);
+    }
+
+    if (config.description) {
+      const desc = document.createElement('div');
+      desc.className = 'medium-list-header-description';
+      desc.innerHTML = config.description;
+      titleGroup.append(desc);
+    }
+    header.append(titleGroup);
+
+    if (config.viewAllText && config.viewAllLink) {
+      const viewAll = document.createElement('a');
+      viewAll.className = 'medium-list-view-all';
+      viewAll.href = normalizePath(config.viewAllLink);
+      viewAll.innerHTML = `${config.viewAllText} &rarr;`;
+      header.append(viewAll);
+    }
+
+    block.append(header);
+  }
+
+  // 2. Resolve & Filter Items
   let items = [];
   if (config.listType === 'fixed') {
     items = parseFixedItems(ueStore);
@@ -394,6 +437,7 @@ export default async function decorate(block) {
     items = filterAndSortItems(rawIndex, config);
   }
 
+  // 3. Render Card Grid
   const ul = document.createElement('ul');
   ul.className = 'medium-list-container';
 
@@ -403,7 +447,7 @@ export default async function decorate(block) {
     emptyLi.textContent = 'No matching pages found.';
     ul.append(emptyLi);
   } else {
-    items.forEach((item) => ul.append(renderItem(item, config)));
+    items.forEach((item, index) => ul.append(renderItem(item, config, index)));
   }
 
   block.append(ueStore, ul);

@@ -4,9 +4,56 @@
 
 .medium-list-wrapper {
   width: 100%;
-  margin: 2rem 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  box-sizing: border-box;
 }
 
+/* Universal Header Lockup */
+.medium-list .medium-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+}
+
+.medium-list .medium-list-main-title {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #0c0c0d;
+  line-height: 1.2;
+}
+
+.medium-list .medium-list-header-description {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.medium-list .medium-list-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 2rem;
+  background-color: #0c0c0d;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.medium-list .medium-list-view-all:hover {
+  opacity: 0.85;
+}
+
+/* Base Card Grid */
 .medium-list .medium-list-container {
   list-style: none;
   margin: 0;
@@ -16,7 +63,6 @@
   gap: 1.5rem;
 }
 
-/* Base Card Style */
 .medium-list .medium-list-item {
   display: flex;
 }
@@ -25,23 +71,37 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .medium-list .medium-list-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 8%);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 12%);
 }
 
-/* Card Thumbnail Media */
+/* Color Schemes */
+.medium-list .medium-list-card.card-color-grey {
+  background-color: #f3f3f3;
+  color: #0c0c0d;
+}
+
+.medium-list .medium-list-card.card-color-black {
+  background-color: #20293c;
+  color: #fff;
+}
+
+.medium-list .medium-list-card.card-color-blue {
+  background-color: #4673db;
+  color: #fff;
+}
+
+/* Media Area */
 .medium-list .medium-list-media {
   width: 100%;
-  height: 180px;
-  background-color: #f5f5f5;
+  height: 200px;
   overflow: hidden;
 }
 
@@ -53,39 +113,43 @@
   display: block;
 }
 
-/* Card Body Content */
+/* Body Content */
 .medium-list .medium-list-body {
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
   flex-grow: 1;
+}
+
+.medium-list .medium-list-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
 }
 
 .medium-list .medium-list-title {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .medium-list .medium-list-title a {
-  color: #1e1e1e;
+  color: inherit;
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
-.medium-list .medium-list-title a:hover,
-.medium-list .medium-list-title a:focus-visible {
-  color: #0056b3;
+.medium-list .medium-list-title a:hover {
   text-decoration: underline;
 }
 
 .medium-list .medium-list-description {
   margin: 0;
   font-size: 0.875rem;
-  color: #555;
   line-height: 1.5;
+  opacity: 0.8;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -94,23 +158,23 @@
 
 .medium-list .medium-list-date {
   font-size: 0.75rem;
-  color: #888;
+  opacity: 0.75;
   margin-top: auto;
   padding-top: 0.5rem;
 }
 
 .medium-list .medium-list-empty {
   grid-column: 1 / -1;
-  padding: 2rem;
+  padding: 2.5rem;
   text-align: center;
   color: #777;
   background-color: #f9f9f9;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px dashed #ccc;
 }
 
 /* ==========================================================================
-   CARDS (M SCROLL) RENDERING PATTERN (.list-style-card-m-scroll)
+   CARDS (M SCROLL) LAYOUT (.list-style-card-m-scroll)
    ========================================================================== */
 
 .medium-list.list-style-card-m-scroll .medium-list-container {
@@ -123,22 +187,12 @@
 
 .medium-list.list-style-card-m-scroll .medium-list-card {
   position: relative;
-  border: none;
-  border-radius: 16px;
-  background-color: #20293c;
-  color: #fff;
   justify-content: flex-end;
-}
-
-.medium-list.list-style-card-m-scroll .medium-list-card.no-image {
-  background-color: #4673db;
 }
 
 .medium-list.list-style-card-m-scroll .medium-list-media {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  inset: 0;
   height: 100%;
   z-index: 1;
 }
@@ -153,49 +207,58 @@
 .medium-list.list-style-card-m-scroll .medium-list-body {
   position: relative;
   z-index: 2;
-  padding: 1.75rem;
-  gap: 0.75rem;
-  justify-content: flex-end;
-}
-
-.medium-list.list-style-card-m-scroll .medium-list-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  opacity: 0.85;
-  text-transform: uppercase;
-}
-
-.medium-list.list-style-card-m-scroll .medium-list-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-  line-height: 1.3;
   color: #fff;
-}
-
-.medium-list.list-style-card-m-scroll .medium-list-description {
-  color: rgb(255 255 255 / 85%);
-  font-size: 0.85rem;
 }
 
 .medium-list.list-style-card-m-scroll .medium-list-cta {
+  color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
   text-decoration: none;
   margin-top: auto;
-  padding-top: 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
-.medium-list.list-style-card-m-scroll .medium-list-cta:hover {
-  text-decoration: underline;
+/* ==========================================================================
+   HERO CARD LAYOUT (.list-style-hero-card)
+   ========================================================================== */
+
+.medium-list.list-style-hero-card .medium-list-container {
+  grid-template-columns: repeat(3, 1fr);
 }
 
-/* Mobile Touch Scroll */
+.medium-list.list-style-hero-card .medium-list-item.hero-item {
+  grid-column: 1 / -1;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  height: 380px;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-media {
+  height: 100%;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-title {
+  font-size: 2rem;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-cta {
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+  margin-top: auto;
+}
+
+/* Responsive Mobile Rules */
 @media (width <= 1024px) {
+  .medium-list.list-style-hero-card .hero-item .medium-list-card {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
   .medium-list.list-style-card-m-scroll .medium-list-container {
     display: flex;
     overflow-x: auto;
