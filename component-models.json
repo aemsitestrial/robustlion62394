@@ -6693,18 +6693,18 @@
       },
       {
         "component": "select",
-        "name": "displayAsTeaser",
-        "label": "Display as Teaser",
-        "value": "true",
+        "name": "listStyle",
+        "label": "List Style",
+        "value": "default",
         "valueType": "string",
         "options": [
           {
-            "name": "Yes",
-            "value": "true"
+            "name": "Default (Teaser Cards)",
+            "value": "default"
           },
           {
-            "name": "No",
-            "value": "false"
+            "name": "Cards (M Scroll)",
+            "value": "card-m-scroll"
           }
         ]
       },

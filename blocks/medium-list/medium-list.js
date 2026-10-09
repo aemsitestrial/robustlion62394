@@ -25,7 +25,7 @@ function getProp(block, name, fallback = '') {
     'tagMatch',
     'tagResultType',
     'maxItemsTags',
-    'displayAsTeaser',
+    'listStyle',
     'showDescription',
     'showDate',
   ];
@@ -58,7 +58,6 @@ function getProp(block, name, fallback = '') {
     if (value) return value;
   }
 
-  // Support labeled key-value rows in authored markup and the hidden UE store.
   const rows = roots.flatMap((root) => [...root.children])
     .filter((row) => !row.classList.contains('medium-list-container'));
   const aliases = {
@@ -79,7 +78,6 @@ function getProp(block, name, fallback = '') {
     if (value) return value;
   }
 
-  // Universal Editor may serialize model values as unlabeled rows, in schema order.
   const fieldIndex = fieldOrder.indexOf(name);
   if (fieldIndex >= 0) {
     const stores = [...block.querySelectorAll('.medium-list-ue-store')];
@@ -215,7 +213,10 @@ function filterAndSortItems(items, config) {
 
         if (matchingItem) {
           usedPaths.add(matchingItem.path);
-          uniqueByTag.push(matchingItem);
+          uniqueByTag.push({
+            ...matchingItem,
+            primaryTag: tag,
+          });
         }
       });
       result = uniqueByTag;
@@ -243,55 +244,102 @@ function renderItem(item, config) {
   const card = document.createElement('div');
   card.className = 'medium-list-card';
 
-  if (config.displayAsTeaser && item.image) {
-    const picContainer = document.createElement('div');
-    picContainer.className = 'medium-list-media';
-    picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '400' }]));
-    card.append(picContainer);
+  if (!item.image) {
+    card.classList.add('no-image');
   }
 
-  const body = document.createElement('div');
-  body.className = 'medium-list-body';
-
-  const title = document.createElement('h3');
-  title.className = 'medium-list-title';
-  const link = document.createElement('a');
-  link.href = normalizePath(item.path);
-  link.textContent = item.title || item.name || 'Untitled';
-  title.append(link);
-  body.append(title);
-
-  if (config.showDescription && item.description) {
-    const desc = document.createElement('p');
-    desc.className = 'medium-list-description';
-    desc.textContent = item.description;
-    body.append(desc);
-  }
-
-  if (config.showDate && item.lastModified) {
-    const date = document.createElement('time');
-    date.className = 'medium-list-date';
-    const rawDate = item.lastModified;
-    const numericTimestamp = typeof rawDate === 'number'
-      || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
-    const timestamp = numericTimestamp
-      ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
-      : rawDate;
-    const parsed = new Date(timestamp);
-    if (!Number.isNaN(parsed.valueOf())) {
-      date.dateTime = parsed.toISOString();
-      date.textContent = parsed.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
-    } else {
-      date.textContent = String(rawDate);
+  if (config.listStyle === 'card-m-scroll') {
+    if (item.image) {
+      const picContainer = document.createElement('div');
+      picContainer.className = 'medium-list-media';
+      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '400' }]));
+      card.append(picContainer);
     }
-    body.append(date);
+
+    const body = document.createElement('div');
+    body.className = 'medium-list-body';
+
+    // Tag Eyebrow
+    const rawTag = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
+    if (rawTag) {
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'medium-list-eyebrow';
+      eyebrow.textContent = rawTag.replace(/^.*:/, '').toUpperCase();
+      body.append(eyebrow);
+    }
+
+    const title = document.createElement('h3');
+    title.className = 'medium-list-title';
+    title.textContent = item.title || item.name || 'Untitled';
+    body.append(title);
+
+    if (config.showDescription && item.description) {
+      const desc = document.createElement('p');
+      desc.className = 'medium-list-description';
+      desc.textContent = item.description;
+      body.append(desc);
+    }
+
+    const cta = document.createElement('a');
+    cta.className = 'medium-list-cta';
+    cta.href = normalizePath(item.path);
+    cta.innerHTML = 'Explore &rarr;';
+    body.append(cta);
+
+    card.append(body);
+  } else {
+    // Default Teaser Rendering
+    if (item.image) {
+      const picContainer = document.createElement('div');
+      picContainer.className = 'medium-list-media';
+      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '400' }]));
+      card.append(picContainer);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'medium-list-body';
+
+    const title = document.createElement('h3');
+    title.className = 'medium-list-title';
+    const link = document.createElement('a');
+    link.href = normalizePath(item.path);
+    link.textContent = item.title || item.name || 'Untitled';
+    title.append(link);
+    body.append(title);
+
+    if (config.showDescription && item.description) {
+      const desc = document.createElement('p');
+      desc.className = 'medium-list-description';
+      desc.textContent = item.description;
+      body.append(desc);
+    }
+
+    if (config.showDate && item.lastModified) {
+      const date = document.createElement('time');
+      date.className = 'medium-list-date';
+      const rawDate = item.lastModified;
+      const numericTimestamp = typeof rawDate === 'number'
+        || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
+      const timestamp = numericTimestamp
+        ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
+        : rawDate;
+      const parsed = new Date(timestamp);
+      if (!Number.isNaN(parsed.valueOf())) {
+        date.dateTime = parsed.toISOString();
+        date.textContent = parsed.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+      } else {
+        date.textContent = String(rawDate);
+      }
+      body.append(date);
+    }
+
+    card.append(body);
   }
 
-  card.append(body);
   li.append(card);
   return li;
 }
@@ -314,13 +362,16 @@ export default async function decorate(block) {
     tags: getProp(block, 'tags'),
     tagMatch: getProp(block, 'tagMatch', 'any'),
     tagResultType: getProp(block, 'tagResultType', 'all'),
+    listStyle: getProp(block, 'listStyle', 'default').toLowerCase(),
     orderBy: getProp(block, 'orderBy', 'title'),
     sortOrder: getProp(block, 'sortOrder', 'ascending'),
     maxItems: Number(rawMax) || 5,
-    displayAsTeaser: getBoolean(block, 'displayAsTeaser', true),
     showDescription: getBoolean(block, 'showDescription', true),
     showDate: getBoolean(block, 'showDate', false),
   };
+
+  block.className = block.className.replace(/\blist-style-\S+/g, '').trim();
+  block.classList.add(`list-style-${config.listStyle}`);
 
   let ueStore = block.querySelector('.medium-list-ue-store');
   if (!ueStore) {
