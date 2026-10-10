@@ -219,6 +219,57 @@
 }
 
 /* ==========================================================================
+   CARD - 2COL (TM SCROLL) LAYOUT (.list-style-card-2col-tm-scroll)
+   ========================================================================== */
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-container {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-card {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-card:hover {
+  transform: translateY(-4px);
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-media {
+  height: 320px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-body {
+  padding: 0;
+  gap: 0.5rem;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #767676;
+  letter-spacing: 0.05em;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #111;
+}
+
+.medium-list.list-style-card-2col-tm-scroll .medium-list-description {
+  font-size: 0.9375rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
    HERO CARD LAYOUT (.list-style-hero-card)
    ========================================================================== */
 
@@ -252,14 +303,15 @@
   margin-top: auto;
 }
 
-/* Responsive Mobile Rules */
+/* Responsive Rules for Mobile & Tablet Touch Scroll */
 @media (width <= 1024px) {
   .medium-list.list-style-hero-card .hero-item .medium-list-card {
     grid-template-columns: 1fr;
     height: auto;
   }
 
-  .medium-list.list-style-card-m-scroll .medium-list-container {
+  .medium-list.list-style-card-m-scroll .medium-list-container,
+  .medium-list.list-style-card-2col-tm-scroll .medium-list-container {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -269,6 +321,11 @@
 
   .medium-list.list-style-card-m-scroll .medium-list-item {
     flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+
+  .medium-list.list-style-card-2col-tm-scroll .medium-list-item {
+    flex: 0 0 320px;
     scroll-snap-align: start;
   }
 }

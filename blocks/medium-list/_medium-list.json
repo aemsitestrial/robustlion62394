@@ -239,6 +239,7 @@
           "options": [
             { "name": "Default (Teaser Cards)", "value": "default" },
             { "name": "Cards (M Scroll)", "value": "card-m-scroll" },
+            { "name": "Card - 2Col (TM Scroll)", "value": "card-2col-tm-scroll" },
             { "name": "Hero Card", "value": "hero-card" }
           ]
         },

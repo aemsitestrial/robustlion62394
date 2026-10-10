@@ -249,9 +249,7 @@ function renderItem(item, config, index = 0) {
   li.className = 'medium-list-item';
 
   const isHero = config.listStyle === 'hero-card' && index === 0;
-  if (isHero) {
-    li.classList.add('hero-item');
-  }
+  if (isHero) li.classList.add('hero-item');
 
   const card = document.createElement('div');
   card.className = 'medium-list-card';
@@ -263,24 +261,46 @@ function renderItem(item, config, index = 0) {
   }
   card.classList.add(`card-color-${effectiveColor}`);
 
-  if (item.image) {
-    const picContainer = document.createElement('div');
-    picContainer.className = 'medium-list-media';
-    picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
-    card.append(picContainer);
-  } else {
-    card.classList.add('no-image');
+  // 1. Top Media Rendering
+  if (config.listStyle === 'card-2col-tm-scroll' || config.listStyle === 'default' || isHero) {
+    if (item.image) {
+      const picContainer = document.createElement('div');
+      picContainer.className = 'medium-list-media';
+      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
+      card.append(picContainer);
+    } else {
+      card.classList.add('no-image');
+    }
+  } else if (config.listStyle === 'card-m-scroll') {
+    if (item.image) {
+      const picContainer = document.createElement('div');
+      picContainer.className = 'medium-list-media';
+      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '600' }]));
+      card.append(picContainer);
+    } else {
+      card.classList.add('no-image');
+    }
   }
 
+  // 2. Body Container
   const body = document.createElement('div');
   body.className = 'medium-list-body';
 
-  // Eyebrow Tag Header
-  const rawTag = item.primaryTag || (String(item.tags || '').split(',')[0] || '').trim();
-  if (rawTag) {
+  // Eyebrow Tag Header (Pipe separated for Card-2Col, single for others)
+  const rawTags = item.primaryTag || String(item.tags || '');
+  if (rawTags) {
     const eyebrow = document.createElement('span');
     eyebrow.className = 'medium-list-eyebrow';
-    eyebrow.textContent = rawTag.replace(/^.*:/, '').toUpperCase();
+    const tagList = rawTags
+      .split(',')
+      .map((t) => t.trim().replace(/^.*:/, '').toUpperCase())
+      .filter(Boolean);
+
+    if (config.listStyle === 'card-2col-tm-scroll') {
+      eyebrow.textContent = tagList.join(' | ');
+    } else {
+      eyebrow.textContent = tagList[0] || '';
+    }
     body.append(eyebrow);
   }
 
