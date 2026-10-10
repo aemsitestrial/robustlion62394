@@ -6771,38 +6771,82 @@
         ]
       },
       {
-        "component": "select",
+        "component": "boolean",
+        "name": "showEyebrow",
+        "label": "Show Eyebrow / Tags",
+        "value": true,
+        "valueType": "boolean"
+      },
+      {
+        "component": "boolean",
+        "name": "showTitle",
+        "label": "Show Title",
+        "value": true,
+        "valueType": "boolean"
+      },
+      {
+        "component": "boolean",
         "name": "showDescription",
         "label": "Show Description",
-        "value": "true",
+        "value": true,
+        "valueType": "boolean"
+      },
+      {
+        "component": "boolean",
+        "name": "showImage",
+        "label": "Show Image",
+        "value": true,
+        "valueType": "boolean"
+      },
+      {
+        "component": "boolean",
+        "name": "showDate",
+        "label": "Show Date",
+        "value": false,
+        "valueType": "boolean"
+      },
+      {
+        "component": "select",
+        "name": "dateFormat",
+        "label": "Date Format",
+        "value": "MMM d, yyyy",
         "valueType": "string",
+        "condition": {
+          "==": [
+            {
+              "var": "showDate"
+            },
+            true
+          ]
+        },
         "options": [
           {
-            "name": "Yes",
-            "value": "true"
+            "name": "MMM d, yyyy (e.g. Oct 4, 2026)",
+            "value": "MMM d, yyyy"
           },
           {
-            "name": "No",
-            "value": "false"
+            "name": "DD-MM-YYYY (e.g. 04-10-2026)",
+            "value": "DD-MM-YYYY"
+          },
+          {
+            "name": "MM-DD-YYYY (e.g. 10-04-2026)",
+            "value": "MM-DD-YYYY"
           }
         ]
       },
       {
-        "component": "select",
-        "name": "showDate",
-        "label": "Show Modification Date",
-        "value": "false",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Yes",
-            "value": "true"
-          },
-          {
-            "name": "No",
-            "value": "false"
-          }
-        ]
+        "component": "boolean",
+        "name": "showAuthor",
+        "label": "Show Author Details",
+        "value": false,
+        "valueType": "boolean"
+      },
+      {
+        "component": "boolean",
+        "name": "showIcon",
+        "label": "Show Icon / Arrow",
+        "value": false,
+        "valueType": "boolean"
       }
     ]
   },

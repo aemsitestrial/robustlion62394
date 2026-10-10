@@ -32,8 +32,14 @@ function getProp(block, name, fallback = '') {
     'sortOrder',
     'cardColor',
     'listStyle',
+    'showEyebrow',
+    'showTitle',
     'showDescription',
+    'showImage',
     'showDate',
+    'dateFormat',
+    'showAuthor',
+    'showIcon',
   ];
 
   const readValue = (element) => {
@@ -61,7 +67,7 @@ function getProp(block, name, fallback = '') {
   );
   if (propertyElement) {
     const value = readValue(propertyElement);
-    if (value) return value;
+    if (value !== '') return value;
   }
 
   const rows = roots.flatMap((root) => [...root.children])
@@ -82,7 +88,7 @@ function getProp(block, name, fallback = '') {
   if (targetRow) {
     const cols = [...targetRow.children];
     const value = readValue(cols[1]);
-    if (value) return value;
+    if (value !== '') return value;
   }
 
   const fieldIndex = fieldOrder.indexOf(name);
@@ -96,16 +102,37 @@ function getProp(block, name, fallback = '') {
       const cells = [...row.children];
       const valueCell = cells.length > 1 ? cells[1] : cells[0] || row;
       const value = readValue(valueCell);
-      if (value) return value;
+      if (value !== '') return value;
     }
   }
 
   return fallback;
 }
 
-function getBoolean(block, name, fallback = false) {
+function getBoolean(block, name, fallback = true) {
   const val = String(getProp(block, name, fallback)).toLowerCase().trim();
+  if (val === '') return fallback;
   return val === 'true' || val === 'yes' || val === '1';
+}
+
+function formatDateValue(rawDate, format = 'MMM d, yyyy') {
+  if (!rawDate) return '';
+  const numericTimestamp = typeof rawDate === 'number'
+    || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
+  const timestamp = numericTimestamp
+    ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
+    : rawDate;
+  const parsed = new Date(timestamp);
+  if (Number.isNaN(parsed.valueOf())) return String(rawDate);
+
+  const day = String(parsed.getDate()).padStart(2, '0');
+  const monthNum = String(parsed.getMonth() + 1).padStart(2, '0');
+  const year = parsed.getFullYear();
+  const monthName = parsed.toLocaleDateString('en-US', { month: 'short' });
+
+  if (format === 'DD-MM-YYYY') return `${day}-${monthNum}-${year}`;
+  if (format === 'MM-DD-YYYY') return `${monthNum}-${day}-${year}`;
+  return `${monthName} ${parsed.getDate()}, ${year}`;
 }
 
 function normalizePath(path) {
@@ -254,70 +281,64 @@ function renderItem(item, config, index = 0) {
   const card = document.createElement('div');
   card.className = 'medium-list-card';
 
-  // Apply Card Theme Color or Fallback Blue if Image is Missing
+  // Apply Card Theme Color or Fallback Blue if Image is Missing/Hidden
+  const hasImage = Boolean(item.image) && config.showImage;
   let effectiveColor = config.cardColor;
-  if (!item.image && config.cardColor === 'grey') {
+  if (!hasImage && config.cardColor === 'grey') {
     effectiveColor = 'blue';
   }
   card.classList.add(`card-color-${effectiveColor}`);
 
-  // 1. Top Media Rendering
-  if (config.listStyle === 'card-2col-tm-scroll' || config.listStyle === 'default' || isHero) {
-    if (item.image) {
-      const picContainer = document.createElement('div');
-      picContainer.className = 'medium-list-media';
-      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
-      card.append(picContainer);
-    } else {
-      card.classList.add('no-image');
-    }
-  } else if (config.listStyle === 'card-m-scroll') {
-    if (item.image) {
-      const picContainer = document.createElement('div');
-      picContainer.className = 'medium-list-media';
-      picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '600' }]));
-      card.append(picContainer);
-    } else {
-      card.classList.add('no-image');
-    }
+  // Media Area (Controlled by showImage)
+  if (config.showImage && item.image) {
+    const picContainer = document.createElement('div');
+    picContainer.className = 'medium-list-media';
+    picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
+    card.append(picContainer);
+  } else {
+    card.classList.add('no-image');
   }
 
-  // 2. Body Container
+  // Body Container
   const body = document.createElement('div');
   body.className = 'medium-list-body';
 
-  // Eyebrow Tag Header (Pipe separated for Card-2Col, single for others)
-  const rawTags = item.primaryTag || String(item.tags || '');
-  if (rawTags) {
-    const eyebrow = document.createElement('span');
-    eyebrow.className = 'medium-list-eyebrow';
-    const tagList = rawTags
-      .split(',')
-      .map((t) => t.trim().replace(/^.*:/, '').toUpperCase())
-      .filter(Boolean);
+  // 1. Eyebrow Tag Header (Controlled by showEyebrow)
+  if (config.showEyebrow) {
+    const rawTags = item.primaryTag || String(item.tags || '');
+    if (rawTags) {
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'medium-list-eyebrow';
+      const tagList = rawTags
+        .split(',')
+        .map((t) => t.trim().replace(/^.*:/, '').toUpperCase())
+        .filter(Boolean);
 
-    if (config.listStyle === 'card-2col-tm-scroll') {
-      eyebrow.textContent = tagList.join(' | ');
-    } else {
-      eyebrow.textContent = tagList[0] || '';
+      if (config.listStyle === 'card-2col-tm-scroll') {
+        eyebrow.textContent = tagList.join(' | ');
+      } else {
+        eyebrow.textContent = tagList[0] || '';
+      }
+      body.append(eyebrow);
     }
-    body.append(eyebrow);
   }
 
-  // Title
-  const title = document.createElement('h3');
-  title.className = 'medium-list-title';
-  if (config.linkItems) {
-    const link = document.createElement('a');
-    link.href = normalizePath(item.path);
-    link.textContent = item.title || item.name || 'Untitled';
-    title.append(link);
-  } else {
-    title.textContent = item.title || item.name || 'Untitled';
+  // 2. Title (Controlled by showTitle)
+  if (config.showTitle) {
+    const title = document.createElement('h3');
+    title.className = 'medium-list-title';
+    if (config.linkItems) {
+      const link = document.createElement('a');
+      link.href = normalizePath(item.path);
+      link.textContent = item.title || item.name || 'Untitled';
+      title.append(link);
+    } else {
+      title.textContent = item.title || item.name || 'Untitled';
+    }
+    body.append(title);
   }
-  body.append(title);
 
-  // Description
+  // 3. Description (Controlled by showDescription)
   if (config.showDescription && item.description) {
     const desc = document.createElement('p');
     desc.className = 'medium-list-description';
@@ -325,32 +346,24 @@ function renderItem(item, config, index = 0) {
     body.append(desc);
   }
 
-  // Modification Date
+  // 4. Author Lockup (Controlled by showAuthor)
+  if (config.showAuthor && (item.author || item.persona)) {
+    const author = document.createElement('div');
+    author.className = 'medium-list-author';
+    author.textContent = item.author || item.persona;
+    body.append(author);
+  }
+
+  // 5. Modification Date (Controlled by showDate)
   if (config.showDate && item.lastModified) {
     const date = document.createElement('time');
     date.className = 'medium-list-date';
-    const rawDate = item.lastModified;
-    const numericTimestamp = typeof rawDate === 'number'
-      || /^\d+(\.\d+)?$/.test(String(rawDate).trim());
-    const timestamp = numericTimestamp
-      ? Number(rawDate) * (Number(rawDate) < 1e12 ? 1000 : 1)
-      : rawDate;
-    const parsed = new Date(timestamp);
-    if (!Number.isNaN(parsed.valueOf())) {
-      date.dateTime = parsed.toISOString();
-      date.textContent = parsed.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
-    } else {
-      date.textContent = String(rawDate);
-    }
+    date.textContent = formatDateValue(item.lastModified, config.dateFormat);
     body.append(date);
   }
 
-  // CTA
-  if (config.linkItems && (config.listStyle === 'card-m-scroll' || isHero)) {
+  // 6. CTA / Arrow Icon (Controlled by linkItems & showIcon)
+  if (config.linkItems && (config.listStyle === 'card-m-scroll' || isHero || config.showIcon)) {
     const cta = document.createElement('a');
     cta.className = 'medium-list-cta';
     cta.href = normalizePath(item.path);
@@ -391,8 +404,14 @@ export default async function decorate(block) {
     cardColor: getProp(block, 'cardColor', 'grey').toLowerCase(),
     listStyle: getProp(block, 'listStyle', 'default').toLowerCase(),
     maxItems: Number(rawMax) || 5,
+    showEyebrow: getBoolean(block, 'showEyebrow', true),
+    showTitle: getBoolean(block, 'showTitle', true),
     showDescription: getBoolean(block, 'showDescription', true),
+    showImage: getBoolean(block, 'showImage', true),
     showDate: getBoolean(block, 'showDate', false),
+    dateFormat: getProp(block, 'dateFormat', 'MMM d, yyyy'),
+    showAuthor: getBoolean(block, 'showAuthor', false),
+    showIcon: getBoolean(block, 'showIcon', false),
   };
 
   block.className = block.className.replace(/\blist-style-\S+/g, '').trim();
