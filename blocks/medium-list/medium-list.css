@@ -151,6 +151,7 @@
   line-height: 1.5;
   opacity: 0.8;
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -173,49 +174,220 @@
   border: 1px dashed #ccc;
 }
 
+/* stylelint-disable no-descending-specificity */
+
 /* ==========================================================================
    CARDS (M SCROLL) LAYOUT (.list-style-card-m-scroll)
+   Matching Figma "Rail - 4 col" Specs Exactly
    ========================================================================== */
 
-.medium-list.list-style-card-m-scroll .medium-list-container {
-  grid-template-columns: repeat(4, 1fr);
+/* 1. Header Lockup Styling */
+.medium-list.list-style-card-m-scroll .medium-list-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
+.medium-list.list-style-card-m-scroll .medium-list-main-title {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #0C0C0D;
+  margin: 0;
+}
+
+/* 2. 4 Column Slot Rail */
+.medium-list.list-style-card-m-scroll .medium-list-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 3. Card Base Dimensions & Setup */
 .medium-list.list-style-card-m-scroll .medium-list-item {
-  height: 420px;
+  display: flex;
+  width: 100%;
 }
 
 .medium-list.list-style-card-m-scroll .medium-list-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   justify-content: flex-end;
+  align-items: flex-start;
+  padding: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 453px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.medium-list.list-style-card-m-scroll .medium-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 15%);
+}
+
+/* 4. Full-Card Background Media Overlay */
 .medium-list.list-style-card-m-scroll .medium-list-media {
   position: absolute;
   inset: 0;
+  width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 0;
+  margin: 0;
+  border-radius: 16px;
 }
 
+.medium-list.list-style-card-m-scroll .medium-list-media picture,
+.medium-list.list-style-card-m-scroll .medium-list-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gradient overlay for readability on image cards */
 .medium-list.list-style-card-m-scroll .medium-list-media::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(0 0 0 / 20%) 0%, rgb(0 0 0 / 80%) 100%);
+  background: linear-gradient(180deg, rgb(0 0 0 / 5%) 0%, rgb(0 0 0 / 65%) 100%);
+  z-index: 1;
 }
 
+/* 5. Color Theme Solid Fallbacks (Matching Figma Specs) */
+.medium-list.list-style-card-m-scroll .medium-list-card.card-color-black,
+.medium-list.list-style-card-m-scroll .medium-list-card.no-image.card-color-black {
+  background: #20293C;
+  color: #FFF;
+}
+
+.medium-list.list-style-card-m-scroll .medium-list-card.card-color-blue,
+.medium-list.list-style-card-m-scroll .medium-list-card.no-image.card-color-blue,
+.medium-list.list-style-card-m-scroll .medium-list-card.no-image.card-color-grey {
+  background: #4673DB;
+  color: #FFF;
+}
+
+/* 6. Text and Metadata Container */
 .medium-list.list-style-card-m-scroll .medium-list-body {
   position: relative;
   z-index: 2;
-  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
 }
 
-.medium-list.list-style-card-m-scroll .medium-list-cta {
-  color: #fff;
-  font-size: 0.875rem;
+/* Overline Tag */
+.medium-list.list-style-card-m-scroll .medium-list-eyebrow {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 70%);
+}
+
+/* Light background image fallback tag color */
+.medium-list.list-style-card-m-scroll .medium-list-card:not(.card-color-black, .card-color-blue) .medium-list-eyebrow {
+  color: #767676;
+}
+
+/* Title Header */
+.medium-list.list-style-card-m-scroll .medium-list-title {
+  font-family: Inter, sans-serif;
+  font-style: normal;
   font-weight: 600;
+  font-size: 28px;
+  line-height: 120%;
+  margin: 0;
+  color: inherit;
+}
+
+.medium-list.list-style-card-m-scroll .medium-list-title a {
+  color: inherit;
   text-decoration: none;
-  margin-top: auto;
+}
+
+.medium-list.list-style-card-m-scroll .medium-list-title a:hover {
+  text-decoration: underline;
+}
+
+/* Description Teaser */
+.medium-list.list-style-card-m-scroll .medium-list-description {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  opacity: 0.7;
+  margin: 0;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Explore CTA Link */
+.medium-list.list-style-card-m-scroll .medium-list-cta {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 140%;
+  color: inherit;
+  text-decoration: none;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.medium-list.list-style-card-m-scroll .medium-list-cta:hover {
+  text-decoration: underline;
+}
+
+/* 7. Mobile Horizontal Touch Scroll Rule (m-scroll <= 1024px) */
+@media (width <= 1024px) {
+  .medium-list.list-style-card-m-scroll .medium-list-main-title {
+    font-size: 32px;
+  }
+
+  .medium-list.list-style-card-m-scroll .medium-list-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .medium-list.list-style-card-m-scroll .medium-list-item {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
 }
 
 /* ==========================================================================
@@ -396,3 +568,315 @@
     scroll-snap-align: start;
   }
 }
+
+/* ==========================================================================
+   HERO CARD LAYOUT (.list-style-hero-card)
+   Matching Figma "Content Section" & "Large Cards" Specs Exactly
+   ========================================================================== */
+
+/* 1. Header Lockup & Pill Button */
+.medium-list.list-style-hero-card .medium-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.medium-list.list-style-hero-card .medium-list-main-title {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: #0C0C0D;
+  margin: 0;
+}
+
+.medium-list.list-style-hero-card .medium-list-view-all {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 24px;
+  gap: 8px;
+  height: 50px;
+  background: #0C0C0D;
+  border: 2px solid #303030;
+  border-radius: 9999px;
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #D9D9D9;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+.medium-list.list-style-hero-card .medium-list-view-all:hover {
+  opacity: 0.85;
+}
+
+/* 2. Container Grid Setup */
+.medium-list.list-style-hero-card .medium-list-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 3. Featured Hero Item (First Child - Index 0) */
+.medium-list.list-style-hero-card .medium-list-item.hero-item {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 40px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 650px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #20293c;
+  isolation: isolate;
+  border: none;
+  box-shadow: none;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  margin: 0;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-media picture,
+.medium-list.list-style-hero-card .hero-item .medium-list-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 10%) 0%, rgb(0 0 0 / 75%) 100%);
+  z-index: 1;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 12px;
+  width: 100%;
+  max-width: 1200px;
+  color: #FFF;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-eyebrow {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-title {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 120%;
+  letter-spacing: -0.03em;
+  color: inherit;
+  margin: 0;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-description {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  color: rgb(255 255 255 / 85%);
+  margin: 0;
+}
+
+.medium-list.list-style-hero-card .hero-item .medium-list-cta {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  color: #FFF;
+  text-decoration: none;
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 4. Secondary Sub-Items (Index 1+) */
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  background: #FFF;
+  border-radius: 16px;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Sub-Card Image Container */
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-media {
+  width: 100%;
+  height: 169.88px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-media picture,
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Sub-Card Content Body */
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 8px;
+  width: 100%;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-eyebrow {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-title {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 140%;
+  letter-spacing: -0.025em;
+  color: #303030;
+  margin: 0;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-title a {
+  color: #303030;
+  text-decoration: none;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-title a:hover {
+  color: #0C0C0D;
+  text-decoration: underline;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-description {
+  font-family: Inter, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 140%;
+  letter-spacing: -0.005em;
+  color: #000;
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* Solid Graphic/Report Sub-Card Fallback */
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-card.no-image {
+  background: #E3E3E3;
+  padding: 24px;
+  box-sizing: border-box;
+  height: 453px;
+  justify-content: space-between;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-card.no-image.card-color-black {
+  background: #20293C;
+  color: #FFF;
+}
+
+.medium-list.list-style-hero-card .medium-list-item:not(.hero-item) .medium-list-card.no-image.card-color-blue {
+  background: #4673DB;
+  color: #FFF;
+}
+
+/* 5. Mobile & Tablet Responsive Rules */
+@media (width <= 1024px) {
+  .medium-list.list-style-hero-card .medium-list-main-title {
+    font-size: 32px;
+  }
+
+  .medium-list.list-style-hero-card .hero-item .medium-list-card {
+    height: auto;
+    min-height: 420px;
+    padding: 24px;
+  }
+
+  .medium-list.list-style-hero-card .hero-item .medium-list-title {
+    font-size: 32px;
+  }
+
+  .medium-list.list-style-hero-card .medium-list-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (width <= 640px) {
+  .medium-list.list-style-hero-card .medium-list-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* stylelint-enable no-descending-specificity */
