@@ -14,9 +14,6 @@ function getProp(block, name, fallback = '') {
     'childDepth',
     'maxItems',
     'fixedItems',
-    'searchQuery',
-    'searchIn',
-    'maxItemsSearch',
     'tagsParentPage',
     'tagsChildDepth',
     'tags',
@@ -25,8 +22,8 @@ function getProp(block, name, fallback = '') {
     'maxItemsTags',
     'title',
     'description',
-    'viewAllText',
-    'viewAllLink',
+    'ctaLabel',
+    'ctaLink',
     'linkItems',
     'orderBy',
     'sortOrder',
@@ -74,9 +71,9 @@ function getProp(block, name, fallback = '') {
     .filter((row) => !row.classList.contains('medium-list-container') && !row.classList.contains('medium-list-header'));
   const aliases = {
     parentpage: ['parentpagepath'],
-    searchin: ['searchinpath'],
     tagsparentpage: ['parentpagepath', 'tagparentpagepath'],
-    viewalllink: ['viewallpath'],
+    ctalabel: ['viewalltext'],
+    ctalink: ['viewalllink', 'viewallpath'],
   };
   const acceptableNames = [normalizedName, ...(aliases[normalizedName] || [])];
   const targetRow = rows.find((row) => {
@@ -199,16 +196,6 @@ function filterAndSortItems(items, config) {
 
       const depth = relativePath.split('/').filter(Boolean).length;
       return depth >= 1 && depth <= targetDepth;
-    });
-  } else if (config.listType === 'search') {
-    const terms = (config.searchQuery || '').toLowerCase().split(/\s+/).filter(Boolean);
-    const scopePath = config.searchIn ? normalizePath(config.searchIn) : null;
-
-    result = result.filter((item) => {
-      const text = `${item.title || ''} ${item.description || ''} ${item.path || ''}`.toLowerCase();
-      const matchesText = terms.every((t) => text.includes(t));
-      const matchesScope = !scopePath || normalizePath(item.path).startsWith(`${scopePath}/`);
-      return matchesText && matchesScope;
     });
   } else if (config.listType === 'tags') {
     const rawTags = Array.isArray(config.tags) ? config.tags.join(',') : String(config.tags || '');
@@ -377,18 +364,16 @@ function renderItem(item, config, index = 0) {
 }
 
 export default async function decorate(block) {
+  block.classList.add('medium-list');
   const listType = String(getProp(block, 'listType', 'children')).toLowerCase().trim();
 
   let rawMax = getProp(block, 'maxItems', '5');
-  if (listType === 'search') rawMax = getProp(block, 'maxItemsSearch', rawMax);
   if (listType === 'tags') rawMax = getProp(block, 'maxItemsTags', rawMax);
 
   const config = {
     listType,
     parentPage: getProp(block, 'parentPage'),
     childDepth: getProp(block, 'childDepth', '1'),
-    searchQuery: getProp(block, 'searchQuery'),
-    searchIn: getProp(block, 'searchIn'),
     tagsParentPage: getProp(block, 'tagsParentPage'),
     tagsChildDepth: getProp(block, 'tagsChildDepth', '1'),
     tags: getProp(block, 'tags'),
@@ -396,8 +381,8 @@ export default async function decorate(block) {
     tagResultType: getProp(block, 'tagResultType', 'all'),
     title: getProp(block, 'title'),
     description: getProp(block, 'description'),
-    viewAllText: getProp(block, 'viewAllText'),
-    viewAllLink: getProp(block, 'viewAllLink'),
+    ctaLabel: getProp(block, 'ctaLabel'),
+    ctaLink: getProp(block, 'ctaLink'),
     linkItems: getBoolean(block, 'linkItems', true),
     orderBy: getProp(block, 'orderBy', 'title'),
     sortOrder: getProp(block, 'sortOrder', 'ascending'),
@@ -434,7 +419,7 @@ export default async function decorate(block) {
   if (oldList) oldList.remove();
 
   // 1. Render Universal Header Lockup
-  if (config.title || config.viewAllText) {
+  if (config.title || config.ctaLabel) {
     const header = document.createElement('div');
     header.className = 'medium-list-header';
 
@@ -456,11 +441,11 @@ export default async function decorate(block) {
     }
     header.append(titleGroup);
 
-    if (config.viewAllText && config.viewAllLink) {
+    if (config.ctaLabel && config.ctaLink) {
       const viewAll = document.createElement('a');
       viewAll.className = 'medium-list-view-all';
-      viewAll.href = normalizePath(config.viewAllLink);
-      viewAll.innerHTML = `${config.viewAllText} &rarr;`;
+      viewAll.href = normalizePath(config.ctaLink);
+      viewAll.innerHTML = `${config.ctaLabel} &rarr;`;
       header.append(viewAll);
     }
 
@@ -469,7 +454,7 @@ export default async function decorate(block) {
 
   // 2. Resolve & Filter Items
   let items = [];
-  if (config.listType === 'fixed') {
+  if (config.listType === 'fixed' || config.listType === 'manual') {
     items = parseFixedItems(ueStore);
   } else {
     const rawIndex = await fetchQueryIndex();

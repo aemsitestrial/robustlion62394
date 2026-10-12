@@ -138,7 +138,7 @@ Future blocks should reuse `getTargetConfig('<block-name>')`, `getDecision(confi
 
 ### Query index
 
-`blocks/list/list.js` reads `/query-index.json` and falls back to `/sitemap.json`.
+`blocks/first-list/first-list.js` reads `/query-index.json` and falls back to `/sitemap.json`.
 
 The current `helix-query.yaml` explicitly indexes:
 
@@ -245,7 +245,7 @@ Run both `npm run lint` and `npm run build` before opening a pull request.
 ### List search or tags return no results
 
 1. Open `/query-index.json` in the target environment.
-2. Confirm records contain the fields consumed by `blocks/list/list.js`.
+2. Confirm records contain the fields consumed by `blocks/first-list/first-list.js`.
 3. Confirm the parent path is correct.
 4. Confirm tag values use the same names/casing as the authored tags.
 5. Use a server-side endpoint if the required search behavior is beyond client-side filtering.

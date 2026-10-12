@@ -65,12 +65,12 @@
         "title",
 	"teaser",
         "video",
-        "list",
+        "first-list",
         "header",
         "dummy-header",
         "tarun-header",
         "content-cards",
-        "medium-list",
+        "list",
         "advanced-list"
       ]
     }
