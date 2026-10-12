@@ -68,7 +68,10 @@ function getProp(block, name, fallback = '') {
   }
 
   const rows = roots.flatMap((root) => [...root.children])
-    .filter((row) => !row.classList.contains('list-container') && !row.classList.contains('list-header'));
+    .filter((row) => (
+      !row.classList.contains('list-container')
+      && !row.classList.contains('list-header')
+    ));
   const aliases = {
     parentpage: ['parentpagepath'],
     tagsparentpage: ['parentpagepath', 'tagparentpagepath'],
@@ -93,7 +96,10 @@ function getProp(block, name, fallback = '') {
     const stores = [...block.querySelectorAll('.list-ue-store')];
     const storedRows = stores.length
       ? stores.flatMap((store) => [...store.children])
-      : [...block.children].filter((child) => !child.matches('ul.list-container') && !child.matches('.list-header'));
+      : [...block.children].filter((child) => (
+        !child.matches('ul.list-container')
+        && !child.matches('.list-header')
+      ));
     const row = storedRows[fieldIndex];
     if (row) {
       const cells = [...row.children];
@@ -178,6 +184,20 @@ function parseManualItems(block) {
   }));
 }
 
+/**
+ * Extract normalized tag key (e.g., "aem-eds-xwalk:industries/banking" -> "banking")
+ */
+function cleanTag(tagStr) {
+  if (!tagStr) return '';
+  return String(tagStr)
+    .trim()
+    .toLowerCase()
+    .replace(/^.*:/, '')
+    .replace(/^\/+|\/+$/g, '')
+    .split('/')
+    .pop();
+}
+
 function filterAndSortItems(items, config) {
   let result = items.filter((item) => item.path);
 
@@ -198,8 +218,10 @@ function filterAndSortItems(items, config) {
       return depth >= 1 && depth <= targetDepth;
     });
   } else if (config.listType === 'tags') {
-    const rawTags = Array.isArray(config.tags) ? config.tags.join(',') : String(config.tags || '');
-    const authoredTags = rawTags.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+    const rawTags = Array.isArray(config.tags)
+      ? config.tags.join(',')
+      : String(config.tags || '');
+    const authoredTags = rawTags.split(',').map(cleanTag).filter(Boolean);
     const scopePath = config.tagsParentPage ? normalizePath(config.tagsParentPage) : null;
     const targetDepth = Number(config.tagsChildDepth) || 1;
 
@@ -215,28 +237,44 @@ function filterAndSortItems(items, config) {
         if (depth < 1 || depth > targetDepth) return false;
       }
 
-      const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
+      const itemTags = String(item.tags || '')
+        .split(',')
+        .map(cleanTag)
+        .filter(Boolean);
+
+      if (!authoredTags.length) return true;
+
+      const isMatch = (at) => itemTags.some((it) => (
+        it === at || it.includes(at) || at.includes(it)
+      ));
+
       return config.tagMatch === 'all'
-        ? authoredTags.every((t) => itemTags.some((it) => it.includes(t)))
-        : authoredTags.some((t) => itemTags.some((it) => it.includes(t)));
+        ? authoredTags.every(isMatch)
+        : authoredTags.some(isMatch);
     });
 
     if (config.tagResultType === '1-each' && authoredTags.length > 0) {
       const uniqueByTag = [];
       const usedPaths = new Set();
 
-      authoredTags.forEach((tag) => {
+      authoredTags.forEach((tagKey) => {
         const matchingItem = candidateItems.find((item) => {
           if (usedPaths.has(item.path)) return false;
-          const itemTags = String(item.tags || '').toLowerCase().split(',').map((t) => t.trim());
-          return itemTags.some((it) => it.includes(tag));
+          const itemTags = String(item.tags || '')
+            .split(',')
+            .map(cleanTag)
+            .filter(Boolean);
+
+          return itemTags.some((it) => (
+            it === tagKey || it.includes(tagKey) || tagKey.includes(it)
+          ));
         });
 
         if (matchingItem) {
           usedPaths.add(matchingItem.path);
           uniqueByTag.push({
             ...matchingItem,
-            primaryTag: tag,
+            primaryTag: tagKey,
           });
         }
       });
@@ -280,7 +318,9 @@ function renderItem(item, config, index = 0) {
   if (config.showImage && item.image) {
     const picContainer = document.createElement('div');
     picContainer.className = 'list-media';
-    picContainer.append(createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]));
+    picContainer.append(
+      createOptimizedPicture(item.image, item.title || '', false, [{ width: '800' }]),
+    );
     card.append(picContainer);
   } else {
     card.classList.add('no-image');
